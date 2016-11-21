@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">DoS</string>
+    <string name="service_id">project.dos</string>
+
+</resources>
