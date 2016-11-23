@@ -10,16 +10,49 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="project.dos.MainActivity">
 
-    <Button
-        android:text="START GAME"
+    <TextView
+        android:text="Welcome to demo-version of Duel of Strategists!"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:id="@+id/textView2"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <TextView
+        android:text="TextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/connectButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="69dp"
+        android:id="@+id/textView3" />
+
+    <Button
+        android:text="Settings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/settingsButton"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="200dp"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="START GAME"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/connectButton"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:onClick="onConnectClick"/>
+        android:onClick="onConnectClick (MainActivity)"
+        android:layout_above="@+id/helpButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="Help and tips"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/helpButton"
+        android:layout_above="@+id/settingsButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:onClick="onHelpClick (MainActivity)" />
 </RelativeLayout>

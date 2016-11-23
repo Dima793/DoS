@@ -17,4 +17,9 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, NetworkActivity.class);
         startActivity(intent);
     }
+
+    public void onHelpClick(View v) {
+        Intent intent = new Intent(this, HelpActivity.class);
+        startActivity(intent);
+    }
 }
