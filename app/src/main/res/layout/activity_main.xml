@@ -41,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/connectButton"
-        android:onClick="onConnectClick (MainActivity)"
+        android:onClick="onConnectClick"
         android:layout_above="@+id/helpButton"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
@@ -54,5 +54,5 @@
         android:layout_above="@+id/settingsButton"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:onClick="onHelpClick (MainActivity)" />
+        android:onClick="onHelpClick" />
 </RelativeLayout>

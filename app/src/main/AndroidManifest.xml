@@ -23,6 +23,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".NetworkActivity"> </activity>
+        <activity android:name=".HelpActivity"> </activity>
+        <activity android:name=".HireActivity"> </activity>
     </application>
 
 </manifest>
