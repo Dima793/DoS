@@ -12,8 +12,13 @@ import java.util.ArrayList;
 
 public class HireActivity extends AppCompatActivity {
     Integer pointsLeft = 1000;
+<<<<<<< HEAD:android/src/project/dos/HireActivity.java
     ArrayList<Integer> number = new ArrayList<>();
     ArrayList<Creature> creatures = new ArrayList<>();
+=======
+    ArrayList<Integer> number = new ArrayList<Integer>();
+    ArrayList<Creature> creatures = new ArrayList<Creature>();
+>>>>>>> origin/Demo:app/src/main/java/project/dos/HireActivity.java
     TextView desc;
     Spinner spinner;
     TextView pointsText;

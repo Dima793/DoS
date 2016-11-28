@@ -40,6 +40,9 @@ public class NetworkActivity extends Activity {
     public void onHostClick(View v) {
         networkController.startAdvertising();
 
+        Intent intent = new Intent(this, HireActivity.class);
+        startActivity(intent);
+
         //connect
 
         //networkController.stopAdvertising();
@@ -48,6 +51,8 @@ public class NetworkActivity extends Activity {
     public void onClientClick(View v) {
         networkController.startDiscovery();
 
+        Intent intent = new Intent(this, HireActivity.class);
+        startActivity(intent);
         //connect
 
         //stopDiscovery();
