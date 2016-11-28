@@ -136,8 +136,15 @@ public class NetworkController implements
 
     @Override
     public void onMessageReceived(String endpointId, byte[] payload, boolean isReliable) {
-        NetworkActivity.showText(otherEndpointsNames.get(endpointId) + ": " + new String(payload));
+        //NetworkActivity.showText(otherEndpointsNames.get(endpointId) + ": " + new String(payload));
         //otherEndpointsNames depends on endpointId
+        String s = new String(payload);
+        if (s.charAt(0) == 'A') {
+            BattlefieldLogic.battlefieldLogic.getTurn();
+        }
+        else {
+            BattlefieldLogic.battlefieldLogic.accept(s);
+        }
     }
 
     @Override

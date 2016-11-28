@@ -9,51 +9,58 @@ import java.util.ArrayList;
  */
 
 public class Creature {
-    private int hp, ap, pos, owner;
+    private int hp, ap, owner;
+    Pair<Integer, Integer> pos;
     public String name;
     ArrayList<Pair<Integer, String>> abilities = new ArrayList<Pair<Integer, String>>();
 
     public Creature() {}
 
-    public Creature(int newOwner, int newPos) { //for the demo version there'll be just one type of creatures
+    public Creature(int newOwner, Pair<Integer, Integer> newPos) { //for the demo version there'll be just one type of creatures
         hp = 100;
         ap = 5;
-        name = "Target dummy";
+        name = "Target_dummy";
         abilities.add(new Pair<Integer, String>(1, "move"));
         abilities.add(new Pair<Integer, String>(3, "hit"));
         owner = newOwner;
         pos = newPos;
     }
 
-    public void apply(int ind, int targetPos) {
-        Creature target = BattlefieldLogic.battlefieldLogic.getTiles().get(targetPos);
+    public void apply(int ind, Pair<Integer, Integer> targetPos) {
         if (ind == 1) {
-            if (target != null)
+            int pointsSpent = BattlefieldLogic.battlefieldLogic.get_dist(pos, targetPos);
+            if (pointsSpent > ap)
                 return;
-            int oldPos = pos;
             pos = targetPos;
-            BattlefieldLogic.battlefieldLogic.push(oldPos, null, pos, this);
+            ap -= pointsSpent;
+            BattlefieldLogic.battlefieldLogic.push(1, this);
         }
         else {
-            if (target == null || target.owner == owner)
+            int pointsSpent = abilities.get(ind).first;
+            if (pointsSpent > ap || BattlefieldLogic.battlefieldLogic.get_dist(pos, targetPos) > 1)
                 return;
-            target.takeHit(25);
+            ap -= pointsSpent;
+            Creature target = BattlefieldLogic.battlefieldLogic.creatures.get(targetPos);
+            if (target.owner != owner)
+                target.takeHit(25);
+            BattlefieldLogic.battlefieldLogic.push(1, this);
+            BattlefieldLogic.battlefieldLogic.push(1, target);
         }
     }
 
     @Override
     public String toString() {
-        return "" + pos + " " + owner + " " + hp + " " + ap + " " + name;
+        return "" + pos.first + " " + pos.second + " " + owner + " " + hp + " " + ap + " " + name;
     }
 
     public static Creature fromString(String s) {
         String[] params = s.split(" ");
         Creature result = new Creature();
-        result.pos = Integer.parseInt(params[0]);
-        result.owner = Integer.parseInt(params[1]);
-        result.hp = Integer.parseInt(params[2]);
-        result.ap = Integer.parseInt(params[3]);
-        result.name = params[4];
+        result.pos = new Pair<Integer, Integer>(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
+        result.owner = Integer.parseInt(params[2]);
+        result.hp = Integer.parseInt(params[3]);
+        result.ap = Integer.parseInt(params[4]);
+        result.name = params[5];
         result.abilities.add(new Pair<Integer, String>(1, "move"));
         result.abilities.add(new Pair<Integer, String>(3, "hit"));
         return result;
@@ -62,7 +69,7 @@ public class Creature {
     public void takeHit(int dmg) {
         hp -= dmg;
         if (hp <= 0)
-            BattlefieldLogic.battlefieldLogic.kill(pos);
+            BattlefieldLogic.battlefieldLogic.kill(this);
     }
 
     public void replenishAP() {
