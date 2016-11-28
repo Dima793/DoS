@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 public class HireActivity extends AppCompatActivity {
     Integer pointsLeft = 1000;
-    ArrayList<Integer> number;
-    ArrayList<Creature> creatures;
+    ArrayList<Integer> number = new ArrayList<Integer>();
+    ArrayList<Creature> creatures = new ArrayList<Creature>();
     TextView desc;
     Spinner spinner;
     TextView pointsText;
@@ -23,7 +23,7 @@ public class HireActivity extends AppCompatActivity {
         desc = (TextView) findViewById(R.id.descriptionText);
         pointsText = (TextView) findViewById(R.id.pointsText);
         pointsText.setText(pointsLeft.toString());
-        creatures.add(new Creature());
+        creatures.add(new Creature(0, 0));
         number.add(0);
         spinner = (Spinner) findViewById(R.id.spinner);
         //spinner.add
