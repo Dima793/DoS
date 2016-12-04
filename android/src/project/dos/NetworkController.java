@@ -33,7 +33,7 @@ public class NetworkController implements
     private static final long TIMEOUT_DISCOVER = 1000L * 30L;
     private GoogleApiClient googleApiClient;
     private String serviceId;
-    private boolean isHost = false;
+    public static boolean isHost = false;
     private ArrayList<String> otherEndpointsIds = new ArrayList<>();
     private HashMap<String, String> otherEndpointsNames = new HashMap<>();// usernames
 
@@ -117,6 +117,7 @@ public class NetworkController implements
                                             NetworkActivity.showText("Connection succeed");
                                             otherEndpointsIds.add(endpointId);
                                             otherEndpointsNames.put(endpointId, endpointName);
+                                            BattlefieldLogic.battlefieldLogic.owner = 0;
                                         } else {
                                             NetworkActivity.showText("Connection failed");
                                         }
@@ -192,6 +193,7 @@ public class NetworkController implements
                             NetworkActivity.showText("Connected to " + endpointName);
                             otherEndpointsIds.add(endpointId);
                             otherEndpointsNames.put(endpointId, endpointName);
+                            BattlefieldLogic.battlefieldLogic.owner = 1;
                         } else {
                             NetworkActivity.showText("Connection to " + endpointName + " failed");
                         }

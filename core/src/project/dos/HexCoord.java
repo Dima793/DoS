@@ -41,4 +41,61 @@ public class HexCoord {
     public HexCoord dif(HexCoord hexCoord) {
         return new HexCoord(x - hexCoord.x, y - hexCoord.y, z - hexCoord.z);
     }
+
+    public void shrink() {
+        int size = BattleField.fieldRadius;
+        while (x > size + 1) {
+            x -= 2;
+            y++;
+            z++;
+        }
+        if (x > size) {
+            x--;
+            y++;
+        }
+        while (x < - size - 1) {
+            x += 2;
+            y--;
+            z--;
+        }
+        if (x < - size) {
+            x++;
+            y--;
+        }
+        while (y > size + 1) {
+            y -= 2;
+            x++;
+            z++;
+        }
+        if (y > size) {
+            y--;
+            x++;
+        }
+        while (y < - size - 1) {
+            y += 2;
+            x--;
+            z--;
+        }
+        if (y < - size) {
+            y++;
+            x--;
+        }while (z > size + 1) {
+            z -= 2;
+            x++;
+            y++;
+        }
+        if (z > size) {
+            z--;
+            y++;
+        }
+        while (z < - size - 1) {
+            z += 2;
+            x--;
+            y--;
+        }
+        if (z < - size) {
+            z++;
+            y--;
+        }
+    }
 }

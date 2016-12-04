@@ -3,7 +3,6 @@ package project.dos;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -50,18 +49,15 @@ public class HireActivity extends AppCompatActivity {
     }
 
     public void onClickGo(View v) {
+        BattlefieldLogic.configure();
         Intent intent = new Intent(this, AndroidLauncher.class);
-        Creature starter;
-        BattlefieldLogic.battlefieldLogic.getTurn();
-        if (BattlefieldLogic.battlefieldLogic.owner == 0) {
-            starter = new Creature(0, new Pair<Integer, Integer>(10, 1));
+        Creature starter1 = new Creature(0, new Pair<>(10, -1));
+        Creature starter2 = new Creature(1, new Pair<>(-10, 1));
+        BattlefieldLogic.battlefieldLogic.creatures.put(starter1.pos, starter1);
+        BattlefieldLogic.battlefieldLogic.creatures.put(starter2.pos, starter2);
+        if (NetworkActivity.networkController.isHost) {
+            BattlefieldLogic.battlefieldLogic.getTurn();
         }
-        else {
-            starter = new Creature(1, new Pair<Integer, Integer>(-10, -1));
-        }
-        if (BattlefieldLogic.battlefieldLogic.owner == 1)
-            BattlefieldLogic.battlefieldLogic.hasTurn = false;
-        BattlefieldLogic.battlefieldLogic.push(1, starter);
         startActivity(intent);
     }
 

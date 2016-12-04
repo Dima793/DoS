@@ -9,23 +9,26 @@ public class Unit {
     //Integer id;
     String type;
     HexCoord coord;
-    int number;
+    //int number;
     String textureFolder;
     Sprite sprite;
+    AbstractCreature creature;
 
-    Unit(String unitType, HexCoord hexCoord, int unitNumber, boolean isRight) {
-        //id = unitId;
-        type = unitType;
+    Unit(AbstractCreature creature) {
+        //id = creature.id;
+        type = creature.name;
+        //number = creature.number;
         textureFolder = "creatures/" + type;
         String filePath = textureFolder;
-        if (isRight) {
+        if (creature.getOwner() == 0) {
             filePath += "/Right.png";
         }
         else {
             filePath += "/Left.png";
         }
         sprite = new Sprite(new Texture(Gdx.files.internal(filePath)));
-        teleportTo(hexCoord);
+        teleportTo(new HexCoord(creature.pos.first, creature.pos.second,
+                - creature.pos.first - creature.pos.second));
     }
 
     void draw(SpriteBatch spriteBatch) {
@@ -39,6 +42,7 @@ public class Unit {
     void teleportTo(HexCoord hexCoord) {
         coord = hexCoord;
         updateSprite();
+        creature.apply(0, new Pair<Integer, Integer>(coord.x, coord.y));
     }
 
     void updateSprite() {
@@ -67,6 +71,7 @@ public class Unit {
                     break;
         }
         //animation
+        creature.apply(0, new Pair<Integer, Integer>(coord.x, coord.y));
         updateSprite();
     }
 }

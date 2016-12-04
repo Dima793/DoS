@@ -1,14 +1,14 @@
 package project.dos;
 
-import android.util.Pair;
 
+import java.util.AbstractCollection;
 import java.util.ArrayList;
 
 /**
  * Created by ASUS on 17.11.2016.
  */
 
-public class Creature {
+public class Creature extends AbstractCreature{
     private int hp, ap, owner;
     Pair<Integer, Integer> pos;
     public String name;
@@ -19,18 +19,20 @@ public class Creature {
     public Creature(int newOwner, Pair<Integer, Integer> newPos) { //for the demo version there'll be just one type of creatures
         hp = 100;
         ap = 5;
-        name = "Target_dummy";
+        name = "DarkKnight";
         abilities.add(new Pair<Integer, String>(1, "move"));
         abilities.add(new Pair<Integer, String>(3, "hit"));
         owner = newOwner;
         pos = newPos;
     }
 
+    @Override
     public void apply(int ind, Pair<Integer, Integer> targetPos) {
-        if (ind == 1) {
+        if (ind == 0) {
             int pointsSpent = BattlefieldLogic.battlefieldLogic.get_dist(pos, targetPos);
             if (pointsSpent > ap)
                 return;
+            BattlefieldLogic.battlefieldLogic.push(0, this);
             pos = targetPos;
             ap -= pointsSpent;
             BattlefieldLogic.battlefieldLogic.push(1, this);
@@ -53,7 +55,8 @@ public class Creature {
         return "" + pos.first + " " + pos.second + " " + owner + " " + hp + " " + ap + " " + name;
     }
 
-    public static Creature fromString(String s) {
+    @Override
+    public Creature fromString(String s) {
         String[] params = s.split(" ");
         Creature result = new Creature();
         result.pos = new Pair<Integer, Integer>(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
@@ -66,16 +69,19 @@ public class Creature {
         return result;
     }
 
+    @Override
     public void takeHit(int dmg) {
         hp -= dmg;
         if (hp <= 0)
             BattlefieldLogic.battlefieldLogic.kill(this);
     }
 
+    @Override
     public void replenishAP() {
         ap = 5;
     }
 
+    @Override
     public int getOwner() {
         return owner;
     }

@@ -17,7 +17,7 @@ import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import java.util.HashMap;
 
 import static java.lang.Math.abs;
-
+//(!) 57 line causes NullPointerException
 public class BattleField extends ApplicationAdapter implements ApplicationListener, InputProcessor {
 	private OrthographicCamera camera;
 	private TiledMap tiledMap;
@@ -26,11 +26,13 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 	private int touchDownY;
 	private SpriteBatch spriteBatch;
 	private HashMap<Integer, Unit> units;
-	private int currentUnit;//id
+	public static int currentUnit;
+	public static int totalUnitNumber;
 	public static int scrHeight;
 	public static int scrWidth;
 	public static int zeroX = 1015;
 	public static int zeroY = 435;
+	public static int fieldRadius = 10;
 	public static HexCoord cameraHexCoord;
 
 	//private Sprite sprite;
@@ -51,9 +53,13 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 
 		spriteBatch = new SpriteBatch();
 		units = new HashMap<Integer, Unit>();
-		units.put(1, new Unit("DarkKnight", new HexCoord(0,1,-1), 1, true));
-		units.put(2, new Unit("DarkKnight", new HexCoord(2,1,-3), 1, false));
-		currentUnit = 1;
+		Gdx.app.log("Info", "AbstractBLogic.battlefieldLogic.creatures.size(): "
+				+ AbstractBLogic.battlefieldLogic.creatures.size());//NullPointerException
+		for (AbstractCreature creature : AbstractBLogic.battlefieldLogic.creatures.values()) {
+			units.put(units.size(), new Unit(creature));
+		}
+		totalUnitNumber = units.size();
+		currentUnit = totalUnitNumber - 1;
 
 		//sprite = new Sprite(new Texture(Gdx.files.internal("Arrow.png")));
 		//sprite.setPosition(zeroX, zeroY);
@@ -112,11 +118,15 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 		Gdx.app.log("Info", "TouchUp: " + screenX + ", " + screenY);
 		if (abs(touchDownX - screenX) + abs(screenY - touchDownY) > 10) {
+			//should be in touchDragged
 			moveCameraBy(HexCoord.convertVectorToHex(touchDownX - screenX, screenY - touchDownY));
 			return true;
 		}
 
 		//move/attack/other ability or something by current unit
+		if (!AbstractBLogic.battlefieldLogic.hasTurn) {
+			return true;
+		}
 		HexCoord touchUpHex = cameraHexCoord.sum(HexCoord.convertVectorToHex(// if hex
 				screenX - scrWidth / 2 + (int)camera.position.x - zeroX,
 				screenY - scrHeight / 2 + (int)camera.position.y - zeroY));
@@ -124,11 +134,15 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 				+ ", difY: " + (screenY - scrHeight / 2)
 				+ ", difCamX: " + ((int)camera.position.x - zeroX)
 				+ ", difCamY: " + ((int)camera.position.y - zeroY));
-		if (touchUpHex.equals(units.get(3 - currentUnit).coord)) {
-			return true;
+		for(Unit unit : units.values()) {
+			if (touchUpHex.equals(unit.coord)) {
+				AbstractBLogic.battlefieldLogic.passTurn();
+				return true;
+			}
 		}
 		units.get(currentUnit).teleportTo(touchUpHex);
-		currentUnit = 3 - currentUnit;
+		currentUnitChanged();
+		AbstractBLogic.battlefieldLogic.passTurn();
 		return true;
 	}
 
@@ -148,6 +162,12 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 		return false;
 	}
 
+	public static void currentUnitChanged() {
+		if (++currentUnit == totalUnitNumber) {
+			currentUnit = 0;
+		}
+	}
+
 	void updateCamera() {
 		moveCameraToHex(cameraHexCoord);
 	};
@@ -157,11 +177,12 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 	}
 
 	void moveCameraToHex(HexCoord hexCoord) {//try
+		hexCoord.shrink();
 		camera.position.set(zeroX + hexCoord.x * 80, zeroY - (hexCoord.y - hexCoord.z) * 16, 0);
-		cameraHexCoord = HexCoord.convertVectorToHex(
-				(int)camera.position.x - zeroX, (int)camera.position.y - zeroY);
-		Gdx.app.log("Info", "CameraMovedTo: " + cameraHexCoord.x + ", "
-				+ cameraHexCoord.y + ", " + cameraHexCoord.z);
-		Gdx.app.log("Info", "(To: " + camera.position.x + ", " + camera.position.y + ")");
+		//cameraHexCoord = HexCoord.convertVectorToHex(
+		//		(int)camera.position.x - zeroX, (int)camera.position.y - zeroY);
+		//Gdx.app.log("Info", "CameraMovedTo: " + cameraHexCoord.x + ", "
+		//		+ cameraHexCoord.y + ", " + cameraHexCoord.z);
+		//Gdx.app.log("Info", "(To: " + camera.position.x + ", " + camera.position.y + ")");
 	}
 }
