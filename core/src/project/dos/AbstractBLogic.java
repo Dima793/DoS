@@ -13,11 +13,7 @@ import static java.lang.Math.max;
 
 public abstract class AbstractBLogic {
     public static AbstractBLogic battlefieldLogic;
-<<<<<<< HEAD
     boolean hasTurn;
-=======
-    boolean isHost, hasTurn;
->>>>>>> origin/Demo
     int owner;
     Map<Pair<Integer, Integer>, AbstractCreature> creatures;
 
@@ -28,12 +24,8 @@ public abstract class AbstractBLogic {
     }
 
     public int get_dist(Pair<Integer, Integer> a, Pair<Integer, Integer> b) {
-<<<<<<< HEAD
         return Math.max(Math.max(abs(a.first - b.first), abs(a.second - b.second)),
                 abs(- a.first - a.second + b.first + b.second));
-=======
-        return 0;
->>>>>>> origin/Demo
     }
 
     public void push(int tp, AbstractCreature a) {
