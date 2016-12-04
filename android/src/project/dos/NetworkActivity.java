@@ -38,6 +38,10 @@ public class NetworkActivity extends Activity {
     }
 
     public void onHostClick(View v) {
+<<<<<<< HEAD
+=======
+        BattlefieldLogic.battlefieldLogic.owner = 0;
+>>>>>>> origin/Demo
         networkController.startAdvertising();
 
         //connect
@@ -46,8 +50,13 @@ public class NetworkActivity extends Activity {
     }
 
     public void onClientClick(View v) {
+<<<<<<< HEAD
         networkController.startDiscovery();
 
+=======
+        BattlefieldLogic.battlefieldLogic.owner = 1;
+        networkController.startDiscovery();
+>>>>>>> origin/Demo
         //connect
 
         //networkController.stopDiscovery();
