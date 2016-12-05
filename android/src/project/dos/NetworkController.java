@@ -30,11 +30,11 @@ public final class NetworkController implements
         Connections.EndpointDiscoveryListener {
     public static NetworkController networkController = new NetworkController();
 
-    private static final long TIMEOUT_ADVERTISE = 1000L * 30L;
-    private static final long TIMEOUT_DISCOVER = 1000L * 30L;
+    private final long TIMEOUT_ADVERTISE = 1000L * 30L;
+    private final long TIMEOUT_DISCOVER = 1000L * 30L;
     private GoogleApiClient googleApiClient;
     private String serviceId;
-    public static boolean isHost = false;
+    public boolean isHost;
     private ArrayList<String> otherEndpointsIds = new ArrayList<>();
     private HashMap<String, String> otherEndpointsNames = new HashMap<>();// usernames
 
@@ -50,6 +50,7 @@ public final class NetworkController implements
                 .addOnConnectionFailedListener(this)
                 .addApi(Nearby.CONNECTIONS_API)
                 .build();
+        isHost = false;
     }
 
     @Override
@@ -258,7 +259,6 @@ public final class NetworkController implements
 
     public void stopAdvertising() {
         Nearby.Connections.stopAdvertising(googleApiClient);
-        isHost = false;
     }
 
     public void stopDiscovery() {

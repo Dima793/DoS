@@ -3,14 +3,19 @@ package project.dos;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.badlogic.gdx.Gdx;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static project.dos.BattlefieldLogic.battlefieldLogic;
+import static project.dos.DBController.controller;
 import static project.dos.NetworkController.networkController;
 
 public class HireActivity extends AppCompatActivity {
@@ -52,17 +57,22 @@ public class HireActivity extends AppCompatActivity {
     }
 
     public void onClickGo(View v) {
-        battlefieldLogic.configure(networkController::sendMessageToAll);
-        Intent intent = new Intent(this, AndroidLauncher.class);
+        battlefieldLogic.configure(
+                () -> networkController.sendMessageToAll(battlefieldLogic.message),
+                () -> controller.insertOrEditCreature(battlefieldLogic.creatureToSetOrRemove),
+                () -> controller.removeCreature(battlefieldLogic.creatureToSetOrRemove));
         Creature starter1 = new Creature(0, new Pair<>(10, -1));
         Creature starter2 = new Creature(1, new Pair<>(-10, 1));
-        battlefieldLogic.creatures.put(starter1.pos, starter1);
-        battlefieldLogic.creatures.put(starter2.pos, starter2);
+        battlefieldLogic.creatures.put(starter1.pos, new CreatureHandler(starter1));
+        battlefieldLogic.creatures.put(starter2.pos, new CreatureHandler(starter2));
+        battlefieldLogic.pushToDatabase(starter1);
+        battlefieldLogic.pushToDatabase(starter2);
         if (networkController.isHost) {
             battlefieldLogic.getTurn();
         }
         if (battlefieldLogic.owner == 0)
             DBController.initialize(this);
+        Intent intent = new Intent(this, AndroidLauncher.class);
         startActivity(intent);
     }
 

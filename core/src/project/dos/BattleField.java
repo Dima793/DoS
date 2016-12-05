@@ -27,7 +27,7 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 	private int touchDownX;
 	private int touchDownY;
 	private SpriteBatch spriteBatch;
-	private HashMap<Integer, Unit> units;
+	public static HashMap<Integer, Unit> units;
 	public static int currentUnit;
 	public static int totalUnitNumber;
 	public static int scrHeight;
@@ -55,9 +55,13 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 
 		spriteBatch = new SpriteBatch();
 		units = new HashMap<Integer, Unit>();
-		Gdx.app.log("Info", "AbstractBLogic.battlefieldLogic.creatures.size(): "
-				+ battlefieldLogic.creatures.size());//NullPointerException
-		for (Creature creature : battlefieldLogic.creatures.values()) {
+		Gdx.app.log("Info", "battlefieldLogic.creatures.size(): "
+				+ battlefieldLogic.creatures.size());
+		for (CreatureHandler creature : battlefieldLogic.creatures.values()) {
+			Gdx.app.log("Info", "battlefieldLogic.creatures have one at: ("
+					+ creature.get().pos.first + ", " + creature.get().pos.second + ")");
+		}
+		for (CreatureHandler creature : battlefieldLogic.creatures.values()) {
 			units.put(units.size(), new Unit(creature));
 		}
 		totalUnitNumber = units.size();
@@ -127,6 +131,7 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 
 		//move/attack/other ability or something by current unit
 		if (!battlefieldLogic.hasTurn) {
+			Gdx.app.log("Info", "NotMyTurn");
 			return true;
 		}
 		HexCoord touchUpHex = cameraHexCoord.sum(HexCoord.convertVectorToHex(// if hex
@@ -139,9 +144,14 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 		for(Unit unit : units.values()) {
 			if (touchUpHex.equals(unit.coord)) {
 				battlefieldLogic.passTurn();
+				Gdx.app.log("Info", "Somebody is already here");
 				return true;
 			}
 		}
+		Unit currUnit = units.get(currentUnit);
+		Gdx.app.log("Info", "Trying to teleport unit №" + currentUnit
+				+ " from (" + currUnit.coord.x + ", " + currUnit.coord.y + ", " + currUnit.coord.z
+				+ ") to (" + touchUpHex.x + ", " + touchUpHex.y + ", " + touchUpHex.z + ")");
 		units.get(currentUnit).teleportTo(touchUpHex);
 		currentUnitChanged();
 		battlefieldLogic.passTurn();

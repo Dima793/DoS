@@ -11,4 +11,15 @@ public class Pair<T, U> {
         first = a;
         second = b;
     }
+
+    @Override
+    public int hashCode() {
+        return 11500 * (Integer)first + (Integer)second;
+    }
+
+    @Override
+    public boolean equals(Object a) {
+        Pair<T, U> b = (Pair<T, U>) a;
+        return (first == b.first) && (second == b.second);
+    }
 }

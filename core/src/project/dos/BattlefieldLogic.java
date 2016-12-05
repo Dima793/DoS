@@ -1,8 +1,9 @@
 package project.dos;
 
 
+import com.badlogic.gdx.Gdx;
+
 import java.util.HashMap;
-import java.util.function.Consumer;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
@@ -17,37 +18,41 @@ public final class BattlefieldLogic {
 
     public boolean hasTurn = false;
     public int owner;
-    public HashMap<Pair<Integer, Integer>, Creature> creatures =
-            new HashMap<Pair<Integer, Integer>, Creature>();
-    private Consumer<String> messageSender;
-    public Consumer<Creature> setCreature;
-    public Consumer<Creature> removeCreature;
+    public HashMap<Pair<Integer, Integer>, CreatureHandler> creatures;
+    public static String message;
+    public static Creature creatureToSetOrRemove;
+    private Runnable messageSender;
+    private Runnable creatureSetter;
+    private Runnable creatureRemover;
 
-    public void configure(Consumer<String> sender) {
+    public void configure(Runnable sender, Runnable setter, Runnable remover) {
         messageSender = sender;
+        creatureSetter = setter;
+        creatureRemover = remover;
+        creatures = new HashMap<>();
     }
 
     public void passTurn() {
         hasTurn = false;
-        messageSender.accept("A");
+        sendMessage("A");
     }
 
     public void pushToDatabase (Creature creature) {
         if (owner == 0)
-            setCreature.accept(creature);
+            setCreature(creature);
     }
 
     public void removeFromDatabase (Creature creature) {
         if (owner == 0)
-            removeCreature.accept(creature);
+            removeCreature(creature);
     }
 
     public void getTurn() {
         hasTurn = true;
         BattleField.currentUnitChanged();
-        for (Creature cr : creatures.values()) {
-            if (cr.getOwner() == owner)
-                cr.replenishAP();
+        for (CreatureHandler crh : creatures.values()) {
+            if (crh.get().getOwner() == owner)
+                crh.get().replenishAP();
             }
     }
 
@@ -64,7 +69,7 @@ public final class BattlefieldLogic {
         else
             pushToDatabase(a);
         String ans = Integer.toString(tp) + ";" + a.toString();
-        messageSender.accept(ans);
+        sendMessage(ans);
     }
 
     public void accept (String changes) {
@@ -75,7 +80,7 @@ public final class BattlefieldLogic {
             removeFromDatabase(creature);
         }
         else {
-            creatures.put(creature.pos, creature);
+            creatures.put(creature.pos, new CreatureHandler(creature));
             pushToDatabase(creature);
         }
     }
@@ -83,5 +88,20 @@ public final class BattlefieldLogic {
     public void kill(Creature killed) {
         creatures.remove(killed.pos);
         push(0, killed);
+    }
+
+    public void sendMessage(String newMessage) {
+        message = newMessage;
+        messageSender.run();
+    }
+
+    public void setCreature(Creature creatureToSet) {
+        creatureToSetOrRemove = creatureToSet;
+        creatureSetter.run();
+    }
+
+    public void removeCreature(Creature creatureToRemove) {
+        creatureToSetOrRemove = creatureToRemove;
+        creatureRemover.run();
     }
 }

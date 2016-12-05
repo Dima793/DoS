@@ -28,26 +28,28 @@ public class Creature {
         pos = newPos;
     }
 
-    public void apply(int ind, Pair<Integer, Integer> targetPos) {
+    public boolean apply(int ind, Pair<Integer, Integer> targetPos) {
         if (ind == 0) {
             int pointsSpent = battlefieldLogic.get_dist(pos, targetPos);
             if (pointsSpent > ap)
-                return;
+                return false;
             battlefieldLogic.push(0, this);
             pos = targetPos;
             ap -= pointsSpent;
             battlefieldLogic.push(1, this);
+            return true;
         }
         else {
             int pointsSpent = abilities.get(ind).first;
             if (pointsSpent > ap || battlefieldLogic.get_dist(pos, targetPos) > 1)
-                return;
+                return false;
             ap -= pointsSpent;
-            Creature target = battlefieldLogic.creatures.get(targetPos);
+            Creature target = battlefieldLogic.creatures.get(targetPos).get();
             if (target.owner != owner)
                 target.takeHit(25);
             battlefieldLogic.push(1, this);
             battlefieldLogic.push(1, target);
+            return true;
         }
     }
 
