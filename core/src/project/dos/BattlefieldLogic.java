@@ -19,17 +19,19 @@ public final class BattlefieldLogic {
     public boolean hasTurn = false;
     public int owner;
     public HashMap<Pair<Integer, Integer>, CreatureHandler> creatures;
-    public static String message;
-    public static Creature creatureToSetOrRemove;
+    public String message;
+    public Creature creatureToSetOrRemove;
     private Runnable messageSender;
     private Runnable creatureSetter;
     private Runnable creatureRemover;
 
     public void configure(Runnable sender, Runnable setter, Runnable remover) {
+        creatures = new HashMap<>();
+        message = "";
+        creatureToSetOrRemove = new Creature(0, new Pair<Integer, Integer>(1, 1));
         messageSender = sender;
         creatureSetter = setter;
         creatureRemover = remover;
-        creatures = new HashMap<>();
     }
 
     public void passTurn() {

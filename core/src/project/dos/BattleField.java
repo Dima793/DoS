@@ -152,9 +152,10 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 		Gdx.app.log("Info", "Trying to teleport unit №" + currentUnit
 				+ " from (" + currUnit.coord.x + ", " + currUnit.coord.y + ", " + currUnit.coord.z
 				+ ") to (" + touchUpHex.x + ", " + touchUpHex.y + ", " + touchUpHex.z + ")");
-		units.get(currentUnit).teleportTo(touchUpHex);
-		currentUnitChanged();
-		battlefieldLogic.passTurn();
+		if (units.get(currentUnit).teleportTo(touchUpHex)) {
+			currentUnitChanged();
+			battlefieldLogic.passTurn();
+		}
 		return true;
 	}
 

@@ -39,19 +39,21 @@ public class Unit {
         sprite.draw(spriteBatch);
     }
 
-    void teleportBy(HexCoord hexCoord) {
-        teleportTo(coord.sum(hexCoord));
+    boolean teleportBy(HexCoord hexCoord) {
+        return teleportTo(coord.sum(hexCoord));
     }
 
-    void teleportTo(HexCoord hexCoord) {
+    boolean teleportTo(HexCoord hexCoord) {
         Gdx.app.log("Info", "" + new Pair<Integer, Integer>(coord.x, coord.y).hashCode() + " "
                 + new Pair<Integer, Integer>(coord.x, coord.y).hashCode());
         if (creatureHandler.get().apply(0, new Pair<Integer, Integer>(hexCoord.x, hexCoord.y))) {
             coord = hexCoord;
             updateSprite();
+            return true;
         }
         else {
             Gdx.app.log("Info", "Teleport aborted, too far");
+            return false;
         }
     }
 

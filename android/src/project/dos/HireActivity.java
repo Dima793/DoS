@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static project.dos.BattlefieldLogic.battlefieldLogic;
-import static project.dos.DBController.controller;
+import static project.dos.DBController.dataBaseController;
 import static project.dos.NetworkController.networkController;
 
 public class HireActivity extends AppCompatActivity {
@@ -57,10 +57,11 @@ public class HireActivity extends AppCompatActivity {
     }
 
     public void onClickGo(View v) {
+        dataBaseController.initialize(this);
         battlefieldLogic.configure(
                 () -> networkController.sendMessageToAll(battlefieldLogic.message),
-                () -> controller.insertOrEditCreature(battlefieldLogic.creatureToSetOrRemove),
-                () -> controller.removeCreature(battlefieldLogic.creatureToSetOrRemove));
+                () -> dataBaseController.insertOrEditCreature(battlefieldLogic.creatureToSetOrRemove),
+                () -> dataBaseController.removeCreature(battlefieldLogic.creatureToSetOrRemove));
         Creature starter1 = new Creature(0, new Pair<>(10, -1));
         Creature starter2 = new Creature(1, new Pair<>(-10, 1));
         battlefieldLogic.creatures.put(starter1.pos, new CreatureHandler(starter1));

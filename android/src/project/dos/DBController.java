@@ -14,15 +14,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class DBController extends SQLiteOpenHelper {
-    public static  DBController controller;
+    public static  DBController dataBaseController;
 
     DBController (Context appContext) {
         super (appContext, "mySave.db", null, 1);
     }
 
     public static void initialize(Context context) {
-        if (controller == null) {
-            controller = new DBController(context);
+        if (dataBaseController == null) {
+            dataBaseController = new DBController(context);
         }
     }
 
@@ -41,7 +41,7 @@ public class DBController extends SQLiteOpenHelper {
     }
     public void insertOrEditCreature (Creature creature) {
         SQLiteDatabase database = this.getWritableDatabase();
-        String query = "SELECT * FROM books WHERE posX=" + creature.pos.first.toString() + "AND posY=" + creature.pos.second.toString() + ";";
+        String query = "SELECT * FROM creatures WHERE posX=" + creature.pos.first.toString() + " AND posY=" + creature.pos.second.toString() + ";";
         Cursor cursor = database.rawQuery(query, null);
         if (cursor.getCount() == 1) {
             removeCreature(creature);
@@ -53,12 +53,12 @@ public class DBController extends SQLiteOpenHelper {
         values.put("hp", creature.hp);
         values.put("ap", creature.ap);
         values.put("name", creature.name);
-        database.insert("books", null, values);
+        database.insert("creatures", null, values);
         database.close();
     }
     public void removeCreature (Creature creature) {
         SQLiteDatabase database = this.getWritableDatabase();
-        String query = "DELETE FROM books WHERE posX= " + creature.pos.first.toString() + " AND posY=" + creature.pos.second.toString() + ";";
+        String query = "DELETE FROM creatures WHERE posX= " + creature.pos.first.toString() + " AND posY=" + creature.pos.second.toString() + ";";
         database.execSQL(query);
         database.close();
     }
@@ -72,7 +72,7 @@ public class DBController extends SQLiteOpenHelper {
     public HashSet<String> searchBy (String fieldName, String value) {
         try {
             SQLiteDatabase database = this.getReadableDatabase();
-            String query = "SELECT * FROM books WHERE " + fieldName + "= '" + value + "'";
+            String query = "SELECT * FROM creatures WHERE " + fieldName + "= '" + value + "'";
             Cursor cursor = database.rawQuery(query, null);
             HashSet<String> result = new HashSet<String>();
             if (cursor.moveToFirst()) {
