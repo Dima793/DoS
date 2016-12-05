@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
+import com.badlogic.gdx.Gdx;
+
 import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.StringBufferInputStream;
@@ -55,6 +57,7 @@ public class DBController extends SQLiteOpenHelper {
         values.put("name", creature.name);
         database.insert("creatures", null, values);
         database.close();
+        Gdx.app.log("Info", printAll());
     }
     public void removeCreature (Creature creature) {
         SQLiteDatabase database = this.getWritableDatabase();
@@ -67,6 +70,32 @@ public class DBController extends SQLiteOpenHelper {
         database.delete("creatures", null, null);
         database.close();
     }
+
+    public Creature retrieve(Cursor c) {
+        Creature creature = new Creature();
+        creature.pos = new Pair<Integer, Integer>(c.getInt(0), c.getInt(1));
+        creature.owner = c.getInt(2);
+        creature.hp = c.getInt(3);
+        creature.ap = c.getInt(4);
+        creature.name = c.getString(5);
+        return creature;
+    }
+
+    public String printAll() {
+        SQLiteDatabase database = this.getReadableDatabase();
+        String query = "SELECT * FROM creatures";
+        Cursor cursor = database.rawQuery(query, null);
+        StringBuilder result = new StringBuilder();
+        if (cursor.moveToFirst()) {
+            do {
+                result.append(retrieve(cursor) + "\n");
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        database.close();
+        return result.toString();
+    }
+
     /*
     @NonNull
     public HashSet<String> searchBy (String fieldName, String value) {
