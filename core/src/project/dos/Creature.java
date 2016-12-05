@@ -11,8 +11,8 @@ import static project.dos.BattlefieldLogic.battlefieldLogic;
  */
 
 public class Creature {
-    private int hp, ap, owner;
-    Pair<Integer, Integer> pos;
+    public int hp, ap, owner;
+    public Pair<Integer, Integer> pos;
     public String name;
     ArrayList<Pair<Integer, String>> abilities = new ArrayList<Pair<Integer, String>>();
 
@@ -72,6 +72,9 @@ public class Creature {
         hp -= dmg;
         if (hp <= 0)
             battlefieldLogic.kill(this);
+        else {
+            battlefieldLogic.push(1, this);
+        }
     }
 
     public void replenishAP() {

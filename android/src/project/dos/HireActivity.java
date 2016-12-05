@@ -61,6 +61,8 @@ public class HireActivity extends AppCompatActivity {
         if (networkController.isHost) {
             battlefieldLogic.getTurn();
         }
+        if (battlefieldLogic.owner == 0)
+            DBController.initialize(this);
         startActivity(intent);
     }
 

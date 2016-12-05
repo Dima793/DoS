@@ -20,6 +20,8 @@ public final class BattlefieldLogic {
     public HashMap<Pair<Integer, Integer>, Creature> creatures =
             new HashMap<Pair<Integer, Integer>, Creature>();
     private Consumer<String> messageSender;
+    public Consumer<Creature> setCreature;
+    public Consumer<Creature> removeCreature;
 
     public void configure(Consumer<String> sender) {
         messageSender = sender;
@@ -28,6 +30,16 @@ public final class BattlefieldLogic {
     public void passTurn() {
         hasTurn = false;
         messageSender.accept("A");
+    }
+
+    public void pushToDatabase (Creature creature) {
+        if (owner == 0)
+            setCreature.accept(creature);
+    }
+
+    public void removeFromDatabase (Creature creature) {
+        if (owner == 0)
+            removeCreature.accept(creature);
     }
 
     public void getTurn() {
@@ -47,6 +59,10 @@ public final class BattlefieldLogic {
     public void push(int tp, Creature a) {
         if (!hasTurn)
             return;
+        if (tp == 0)
+            removeFromDatabase(a);
+        else
+            pushToDatabase(a);
         String ans = Integer.toString(tp) + ";" + a.toString();
         messageSender.accept(ans);
     }
@@ -56,9 +72,11 @@ public final class BattlefieldLogic {
         Creature creature = new Creature().fromString(realChanges[1]);
         if (Integer.parseInt(realChanges[0]) == 0) {
             creatures.remove(creature.pos);
+            removeFromDatabase(creature);
         }
         else {
             creatures.put(creature.pos, creature);
+            pushToDatabase(creature);
         }
     }
 
