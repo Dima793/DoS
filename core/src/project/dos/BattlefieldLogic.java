@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
+import static project.dos.BattleField.battleField;
 
 /**
  * Created by ASUS on 28.11.2016.
@@ -17,6 +18,7 @@ public final class BattlefieldLogic {
     public static BattlefieldLogic battlefieldLogic = new BattlefieldLogic();
 
     public boolean hasTurn = false;
+    public String toOut = new String();
     public int owner;
     public HashMap<Pair<Integer, Integer>, CreatureHandler> creatures;
     public String message;
@@ -53,8 +55,8 @@ public final class BattlefieldLogic {
         hasTurn = true;
         BattleField.currentUnitChanged();
         for (CreatureHandler crh : creatures.values()) {
-            if (crh.get().getOwner() == owner)
-                crh.get().replenishAP();
+            if (crh.creature.getOwner() == owner)
+                crh.creature.replenishAP();
             }
     }
 
@@ -80,10 +82,14 @@ public final class BattlefieldLogic {
         if (Integer.parseInt(realChanges[0]) == 0) {
             creatures.remove(creature.pos);
             removeFromDatabase(creature);
+            battleField.units.remove(creature.turnID);
         }
         else {
-            creatures.put(creature.pos, new CreatureHandler(creature));
+            CreatureHandler creatureHandler = new CreatureHandler(creature);
+            creatures.put(creature.pos, creatureHandler);
             pushToDatabase(creature);
+            battleField.units.put(creature.turnID, new Unit(creatureHandler, creature.turnID));
+            battleField.units.get(creature.turnID).teleportBy(new HexCoord(0, 0, 0));
         }
     }
 

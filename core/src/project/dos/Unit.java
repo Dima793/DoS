@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import static project.dos.BattlefieldLogic.battlefieldLogic;
-
 public class Unit {
     Integer id;
     String type;
@@ -16,45 +14,53 @@ public class Unit {
     Sprite sprite;
     CreatureHandler creatureHandler;
 
-    Unit(CreatureHandler creature) {
-        //id = creatireID;
+    Unit(CreatureHandler creature, int turnID) {
+        creature.creature.turnID = turnID;
         creatureHandler = creature;
-        type = creature.get().name;
+        type = creature.creature.name;
         //number = creature.number;
         textureFolder = "creatures/" + type;
         String filePath = textureFolder;
-        if (creature.get().getOwner() == 0) {
+        if (creature.creature.getOwner() == 0) {
             filePath += "/Right.png";
         }
         else {
             filePath += "/Left.png";
         }
         sprite = new Sprite(new Texture(Gdx.files.internal(filePath)));
-        coord = new HexCoord(creature.get().pos.first, creature.get().pos.second,
-                - creature.get().pos.first - creature.get().pos.second);
+        coord = new HexCoord(creature.creature.pos.first, creature.creature.pos.second,
+                - creature.creature.pos.first - creature.creature.pos.second);
         updateSprite();
     }
 
-    void draw(SpriteBatch spriteBatch) {
+    public void draw(SpriteBatch spriteBatch) {
         sprite.draw(spriteBatch);
     }
 
-    boolean teleportBy(HexCoord hexCoord) {
-        return teleportTo(coord.sum(hexCoord));
+    public boolean tryTeleportBy(HexCoord hexCoord) {
+        return tryTeleportTo(coord.sum(hexCoord));
     }
 
-    boolean teleportTo(HexCoord hexCoord) {
+    public boolean tryTeleportTo(HexCoord hexCoord) {
         Gdx.app.log("Info", "" + new Pair<Integer, Integer>(coord.x, coord.y).hashCode() + " "
                 + new Pair<Integer, Integer>(coord.x, coord.y).hashCode());
-        if (creatureHandler.get().apply(0, new Pair<Integer, Integer>(hexCoord.x, hexCoord.y))) {
-            coord = hexCoord;
-            updateSprite();
+        if (creatureHandler.creature.apply(0, new Pair<Integer, Integer>(hexCoord.x, hexCoord.y))) {
+            teleportTo(hexCoord);
             return true;
         }
         else {
             Gdx.app.log("Info", "Teleport aborted, too far");
             return false;
         }
+    }
+
+    public void teleportBy(HexCoord hexCoord) {
+        teleportTo(coord.sum(hexCoord));
+    }
+
+    public void teleportTo(HexCoord hexCoord) {
+        coord = hexCoord;
+        updateSprite();
     }
 
     void updateSprite() {
@@ -96,7 +102,7 @@ public class Unit {
                 break;
         }
         //animation
-        creatureHandler.get().apply(
+        creatureHandler.creature.apply(
                 0, new Pair<Integer, Integer>(coord.x, coord.y));
         updateSprite();
     }

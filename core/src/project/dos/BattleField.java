@@ -20,7 +20,10 @@ import static java.lang.Math.abs;
 import static project.dos.BattlefieldLogic.battlefieldLogic;
 
 //(!) 57 line causes NullPointerException
-public class BattleField extends ApplicationAdapter implements ApplicationListener, InputProcessor {
+public final class BattleField
+		extends ApplicationAdapter implements ApplicationListener, InputProcessor {
+	public static BattleField battleField = new BattleField();
+
 	private OrthographicCamera camera;
 	private TiledMap tiledMap;
 	private TiledMapRenderer tiledMapRenderer;
@@ -59,10 +62,10 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 				+ battlefieldLogic.creatures.size());
 		for (CreatureHandler creature : battlefieldLogic.creatures.values()) {
 			Gdx.app.log("Info", "battlefieldLogic.creatures have one at: ("
-					+ creature.get().pos.first + ", " + creature.get().pos.second + ")");
+					+ creature.creature.pos.first + ", " + creature.creature.pos.second + ")");
 		}
 		for (CreatureHandler creature : battlefieldLogic.creatures.values()) {
-			units.put(units.size(), new Unit(creature));
+			units.put(units.size(), new Unit(creature, units.size()));
 		}
 		totalUnitNumber = units.size();
 		currentUnit = totalUnitNumber - 1;
@@ -152,10 +155,11 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 		Gdx.app.log("Info", "Trying to teleport unit №" + currentUnit
 				+ " from (" + currUnit.coord.x + ", " + currUnit.coord.y + ", " + currUnit.coord.z
 				+ ") to (" + touchUpHex.x + ", " + touchUpHex.y + ", " + touchUpHex.z + ")");
-		if (units.get(currentUnit).teleportTo(touchUpHex)) {
+		if (units.get(currentUnit).tryTeleportTo(touchUpHex)) {
 			currentUnitChanged();
 			battlefieldLogic.passTurn();
 		}
+		Gdx.app.log("Info", "BD: " + battlefieldLogic.toOut);
 		return true;
 	}
 

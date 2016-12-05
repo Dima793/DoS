@@ -11,7 +11,7 @@ import static project.dos.BattlefieldLogic.battlefieldLogic;
  */
 
 public class Creature {
-    public int hp, ap, owner;
+    public int hp, ap, turnID, owner;
     public Pair<Integer, Integer> pos;
     public String name;
     ArrayList<Pair<Integer, String>> abilities = new ArrayList<Pair<Integer, String>>();
@@ -44,7 +44,7 @@ public class Creature {
             if (pointsSpent > ap || battlefieldLogic.get_dist(pos, targetPos) > 1)
                 return false;
             ap -= pointsSpent;
-            Creature target = battlefieldLogic.creatures.get(targetPos).get();
+            Creature target = battlefieldLogic.creatures.get(targetPos).creature;
             if (target.owner != owner)
                 target.takeHit(25);
             battlefieldLogic.push(1, this);

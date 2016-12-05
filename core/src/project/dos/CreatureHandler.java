@@ -5,13 +5,9 @@ package project.dos;
  */
 
 public class CreatureHandler {
-    private Creature creature;
+    public Creature creature;
 
     CreatureHandler(Creature baseCreature) {
         creature = baseCreature;
-    }
-
-    public Creature get() {
-        return creature;
     }
 }

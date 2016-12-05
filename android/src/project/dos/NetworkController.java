@@ -173,7 +173,7 @@ public final class NetworkController implements
     }
 
     public void onStart() {
-        remindAboutNetworkConnection();
+        //remindAboutNetworkConnection();
         googleApiClient.connect();
     }
 
@@ -204,7 +204,7 @@ public final class NetworkController implements
     }
 
     public void startAdvertising() {
-        remindAboutNetworkConnection();
+        //remindAboutNetworkConnection();
 
         isHost = true;
 
@@ -232,7 +232,7 @@ public final class NetworkController implements
     }
 
     public void startDiscovery() {
-        remindAboutNetworkConnection();
+        //remindAboutNetworkConnection();
 
         if (isHost) {
             NetworkActivity.showText("Can't discover while advertising");

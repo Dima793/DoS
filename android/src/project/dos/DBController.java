@@ -15,6 +15,8 @@ import java.io.StringBufferInputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import static project.dos.BattlefieldLogic.battlefieldLogic;
+
 public class DBController extends SQLiteOpenHelper {
     public static  DBController dataBaseController;
 
@@ -47,6 +49,7 @@ public class DBController extends SQLiteOpenHelper {
         Cursor cursor = database.rawQuery(query, null);
         if (cursor.getCount() == 1) {
             removeCreature(creature);
+            database = this.getWritableDatabase();
         }
         ContentValues values = new ContentValues();
         values.put("posX", creature.pos.first);
@@ -56,8 +59,8 @@ public class DBController extends SQLiteOpenHelper {
         values.put("ap", creature.ap);
         values.put("name", creature.name);
         database.insert("creatures", null, values);
+        battlefieldLogic.toOut = printAll();
         database.close();
-        Gdx.app.log("Info", printAll());
     }
     public void removeCreature (Creature creature) {
         SQLiteDatabase database = this.getWritableDatabase();
