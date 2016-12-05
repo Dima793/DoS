@@ -21,6 +21,17 @@ android {
         applicationId "project.dos"
         minSdkVersion 9
         targetSdkVersion 25
+        jackOptions {
+            enabled true
+        }
+
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+    lintOptions {
+        abortOnError false
     }
 }
 
@@ -85,8 +96,8 @@ eclipse {
     }
 
     jdt {
-        sourceCompatibility = 1.6
-        targetCompatibility = 1.6
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
 
     classpath {

@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import static project.dos.BattlefieldLogic.battlefieldLogic;
+import static project.dos.NetworkController.networkController;
+
 public class HireActivity extends AppCompatActivity {
     Integer pointsLeft = 1000;
     ArrayList<Integer> number = new ArrayList<>();
@@ -49,14 +52,14 @@ public class HireActivity extends AppCompatActivity {
     }
 
     public void onClickGo(View v) {
-        BattlefieldLogic.configure();
+        battlefieldLogic.configure(networkController::sendMessageToAll);
         Intent intent = new Intent(this, AndroidLauncher.class);
         Creature starter1 = new Creature(0, new Pair<>(10, -1));
         Creature starter2 = new Creature(1, new Pair<>(-10, 1));
-        BattlefieldLogic.battlefieldLogic.creatures.put(starter1.pos, starter1);
-        BattlefieldLogic.battlefieldLogic.creatures.put(starter2.pos, starter2);
-        if (NetworkActivity.networkController.isHost) {
-            BattlefieldLogic.battlefieldLogic.getTurn();
+        battlefieldLogic.creatures.put(starter1.pos, starter1);
+        battlefieldLogic.creatures.put(starter2.pos, starter2);
+        if (networkController.isHost) {
+            battlefieldLogic.getTurn();
         }
         startActivity(intent);
     }

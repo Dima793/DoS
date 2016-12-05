@@ -1,9 +1,8 @@
 package project.dos;
 
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.function.Consumer;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
@@ -12,19 +11,25 @@ import static java.lang.Math.max;
  * Created by ASUS on 28.11.2016.
  */
 
-public final class BattlefieldLogic extends AbstractBLogic {
-    public static BattlefieldLogic battlefieldLogic;
-    boolean hasTurn = false;
-    int owner;
-    HashMap<Pair<Integer, Integer>, Creature> creatures = new HashMap<>();
+@SuppressWarnings("ALL")
+public final class BattlefieldLogic {
+    public static BattlefieldLogic battlefieldLogic = new BattlefieldLogic();
 
-    @Override
-    public void passTurn() {
-        hasTurn = false;
-        NetworkActivity.networkController.sendMessageToAll("A");
+    public boolean hasTurn = false;
+    public int owner;
+    public HashMap<Pair<Integer, Integer>, Creature> creatures =
+            new HashMap<Pair<Integer, Integer>, Creature>();
+    private Consumer<String> messageSender;
+
+    public void configure(Consumer<String> sender) {
+        messageSender = sender;
     }
 
-    @Override
+    public void passTurn() {
+        hasTurn = false;
+        messageSender.accept("A");
+    }
+
     public void getTurn() {
         hasTurn = true;
         BattleField.currentUnitChanged();
@@ -34,21 +39,18 @@ public final class BattlefieldLogic extends AbstractBLogic {
             }
     }
 
-    @Override
     public int get_dist(Pair<Integer, Integer> a, Pair<Integer, Integer> b) {
         int az = -a.first - a.second, bz = -b.first - b.second;
         return max(max(abs(a.first - b.first), abs(a.second - b.second)), abs(az - bz));
     }
 
-    @Override
-    public void push(int tp, AbstractCreature a) {
+    public void push(int tp, Creature a) {
         if (!hasTurn)
             return;
         String ans = Integer.toString(tp) + ";" + a.toString();
-        NetworkActivity.networkController.sendMessageToAll(ans);
+        messageSender.accept(ans);
     }
 
-    @Override
     public void accept (String changes) {
         String[] realChanges = changes.split(";");
         Creature creature = new Creature().fromString(realChanges[1]);
@@ -60,14 +62,8 @@ public final class BattlefieldLogic extends AbstractBLogic {
         }
     }
 
-    @Override
-    public void kill(AbstractCreature killed) {
+    public void kill(Creature killed) {
         creatures.remove(killed.pos);
         push(0, killed);
-    }
-
-    public static void configure() {
-        battlefieldLogic = new BattlefieldLogic();
-        AbstractBLogic.battlefieldLogic = battlefieldLogic;
     }
 }

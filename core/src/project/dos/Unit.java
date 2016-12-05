@@ -12,9 +12,9 @@ public class Unit {
     //int number;
     String textureFolder;
     Sprite sprite;
-    AbstractCreature creature;
+    Creature creature;
 
-    Unit(AbstractCreature creature) {
+    Unit(Creature creature) {
         //id = creature.id;
         type = creature.name;
         //number = creature.number;
@@ -57,18 +57,30 @@ public class Unit {
     }
     void moveByOne(int direction) {
         switch (direction){
-            case 0: coord.x += 1;
-                    break;
-            case 1: coord.y += 1;
-                    break;
-            case 2: coord.z += 1;
-                    break;
-            case 3: coord.x -= 1;
-                    break;
-            case 4: coord.y -= 1;
-                    break;
-            case 5: coord.z -= 1;
-                    break;
+            case 0://right-down, then clockwise
+                coord.x += 1;
+                coord.y -= 1;
+                break;
+            case 1:
+                coord.y -= 1;
+                coord.z += 1;
+                break;
+            case 2:
+                coord.x -= 1;
+                coord.z += 1;
+                break;
+            case 3:
+                coord.x -= 1;
+                coord.y += 1;
+                break;
+            case 4:
+                coord.y += 1;
+                coord.z -= 1;
+                break;
+            case 5:
+                coord.x += 1;
+                coord.z -= 1;
+                break;
         }
         //animation
         creature.apply(0, new Pair<Integer, Integer>(coord.x, coord.y));

@@ -6,13 +6,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import static project.dos.NetworkController.networkController;
+
 public class NetworkActivity extends Activity {
 
     //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     private static TextView textView;
-
-    public static NetworkController networkController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +20,7 @@ public class NetworkActivity extends Activity {
         setContentView(R.layout.activity_network);
         textView = (TextView) findViewById(R.id.textView);
 
-        networkController = new NetworkController(this);
+        networkController.configure(this);
     }
 
     @Override

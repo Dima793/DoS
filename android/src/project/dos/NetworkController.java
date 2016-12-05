@@ -22,12 +22,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class NetworkController implements
+public final class NetworkController implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         Connections.ConnectionRequestListener,
         Connections.MessageListener,
         Connections.EndpointDiscoveryListener {
+    public static NetworkController networkController = new NetworkController();
 
     private static final long TIMEOUT_ADVERTISE = 1000L * 30L;
     private static final long TIMEOUT_DISCOVER = 1000L * 30L;
@@ -41,7 +42,7 @@ public class NetworkController implements
     private MyListDialog myListDialog;
     private AlertDialog connectionRequestDialog;
 
-    NetworkController(Activity a) {
+    public void configure(Activity a) {
         activity = a;
         serviceId = activity.getResources().getString(R.string.service_id);
         googleApiClient = new GoogleApiClient.Builder(activity)

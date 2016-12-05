@@ -17,6 +17,8 @@ import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import java.util.HashMap;
 
 import static java.lang.Math.abs;
+import static project.dos.BattlefieldLogic.battlefieldLogic;
+
 //(!) 57 line causes NullPointerException
 public class BattleField extends ApplicationAdapter implements ApplicationListener, InputProcessor {
 	private OrthographicCamera camera;
@@ -54,8 +56,8 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 		spriteBatch = new SpriteBatch();
 		units = new HashMap<Integer, Unit>();
 		Gdx.app.log("Info", "AbstractBLogic.battlefieldLogic.creatures.size(): "
-				+ AbstractBLogic.battlefieldLogic.creatures.size());//NullPointerException
-		for (AbstractCreature creature : AbstractBLogic.battlefieldLogic.creatures.values()) {
+				+ battlefieldLogic.creatures.size());//NullPointerException
+		for (Creature creature : battlefieldLogic.creatures.values()) {
 			units.put(units.size(), new Unit(creature));
 		}
 		totalUnitNumber = units.size();
@@ -124,7 +126,7 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 		}
 
 		//move/attack/other ability or something by current unit
-		if (!AbstractBLogic.battlefieldLogic.hasTurn) {
+		if (!battlefieldLogic.hasTurn) {
 			return true;
 		}
 		HexCoord touchUpHex = cameraHexCoord.sum(HexCoord.convertVectorToHex(// if hex
@@ -136,13 +138,13 @@ public class BattleField extends ApplicationAdapter implements ApplicationListen
 				+ ", difCamY: " + ((int)camera.position.y - zeroY));
 		for(Unit unit : units.values()) {
 			if (touchUpHex.equals(unit.coord)) {
-				AbstractBLogic.battlefieldLogic.passTurn();
+				battlefieldLogic.passTurn();
 				return true;
 			}
 		}
 		units.get(currentUnit).teleportTo(touchUpHex);
 		currentUnitChanged();
-		AbstractBLogic.battlefieldLogic.passTurn();
+		battlefieldLogic.passTurn();
 		return true;
 	}
 

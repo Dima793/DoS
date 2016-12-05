@@ -4,11 +4,13 @@ package project.dos;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 
+import static project.dos.BattlefieldLogic.battlefieldLogic;
+
 /**
  * Created by ASUS on 17.11.2016.
  */
 
-public class Creature extends AbstractCreature{
+public class Creature {
     private int hp, ap, owner;
     Pair<Integer, Integer> pos;
     public String name;
@@ -26,36 +28,33 @@ public class Creature extends AbstractCreature{
         pos = newPos;
     }
 
-    @Override
     public void apply(int ind, Pair<Integer, Integer> targetPos) {
         if (ind == 0) {
-            int pointsSpent = BattlefieldLogic.battlefieldLogic.get_dist(pos, targetPos);
+            int pointsSpent = battlefieldLogic.get_dist(pos, targetPos);
             if (pointsSpent > ap)
                 return;
-            BattlefieldLogic.battlefieldLogic.push(0, this);
+            battlefieldLogic.push(0, this);
             pos = targetPos;
             ap -= pointsSpent;
-            BattlefieldLogic.battlefieldLogic.push(1, this);
+            battlefieldLogic.push(1, this);
         }
         else {
             int pointsSpent = abilities.get(ind).first;
-            if (pointsSpent > ap || BattlefieldLogic.battlefieldLogic.get_dist(pos, targetPos) > 1)
+            if (pointsSpent > ap || battlefieldLogic.get_dist(pos, targetPos) > 1)
                 return;
             ap -= pointsSpent;
-            Creature target = BattlefieldLogic.battlefieldLogic.creatures.get(targetPos);
+            Creature target = battlefieldLogic.creatures.get(targetPos);
             if (target.owner != owner)
                 target.takeHit(25);
-            BattlefieldLogic.battlefieldLogic.push(1, this);
-            BattlefieldLogic.battlefieldLogic.push(1, target);
+            battlefieldLogic.push(1, this);
+            battlefieldLogic.push(1, target);
         }
     }
 
-    @Override
     public String toString() {
         return "" + pos.first + " " + pos.second + " " + owner + " " + hp + " " + ap + " " + name;
     }
 
-    @Override
     public Creature fromString(String s) {
         String[] params = s.split(" ");
         Creature result = new Creature();
@@ -69,19 +68,16 @@ public class Creature extends AbstractCreature{
         return result;
     }
 
-    @Override
     public void takeHit(int dmg) {
         hp -= dmg;
         if (hp <= 0)
-            BattlefieldLogic.battlefieldLogic.kill(this);
+            battlefieldLogic.kill(this);
     }
 
-    @Override
     public void replenishAP() {
         ap = 5;
     }
 
-    @Override
     public int getOwner() {
         return owner;
     }
