@@ -7,9 +7,8 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 //import com.badlogic.gdx.graphics.Texture;
-//import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
@@ -19,13 +18,12 @@ import java.util.HashMap;
 import static java.lang.Math.abs;
 import static project.dos.BattlefieldLogic.battlefieldLogic;
 
-//(!) 57 line causes NullPointerException
-public final class BattleField
-		extends ApplicationAdapter implements ApplicationListener, InputProcessor {
+public final class BattleField extends ApplicationAdapter implements
+		ApplicationListener,
+		InputProcessor {
 	public static BattleField battleField = new BattleField();
 
 	private OrthographicCamera camera;
-	private TiledMap tiledMap;
 	private TiledMapRenderer tiledMapRenderer;
 	private int touchDownX;
 	private int touchDownY;
@@ -36,28 +34,29 @@ public final class BattleField
 	public static int scrHeight;
 	public static int scrWidth;
 	public static int zeroX = 1015;
-	public static int zeroY = 435;
+	public static int zeroY = 467;
 	public static int fieldRadius = 10;
 	public static HexCoord cameraHexCoord;
 
-	//private Sprite sprite;
+	private Sprite sprite;
 
 	@Override
 	public void create () {
 		scrHeight = Gdx.graphics.getHeight();
 		scrWidth = Gdx.graphics.getWidth();
+		Gdx.app.log("Info", "Width: " + scrWidth + ", Height: " + scrHeight);
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, scrWidth, scrHeight);
 		camera.update();
 		cameraHexCoord = new HexCoord(0, 0, 0);
 		updateCamera();
-		tiledMap = new TmxMapLoader().load("BattleField1.tmx");
-		tiledMapRenderer = new HexagonalTiledMapRenderer(tiledMap);
+		tiledMapRenderer = new HexagonalTiledMapRenderer(
+				new TmxMapLoader().load("BattleField1.tmx"));
 		Gdx.input.setInputProcessor(this);
 
 		spriteBatch = new SpriteBatch();
-		units = new HashMap<Integer, Unit>();
+		units = new HashMap<Integer, Unit>();//shoulb be changed to SparseArrayCompat
 		Gdx.app.log("Info", "battlefieldLogic.creatures.size(): "
 				+ battlefieldLogic.creatures.size());
 		for (CreatureHandler creature : battlefieldLogic.creatures.values()) {
@@ -68,7 +67,7 @@ public final class BattleField
 			units.put(units.size(), new Unit(creature, units.size()));
 		}
 		totalUnitNumber = units.size();
-		currentUnit = totalUnitNumber - 1;
+		currentUnit = 0;
 
 		//sprite = new Sprite(new Texture(Gdx.files.internal("Arrow.png")));
 		//sprite.setPosition(zeroX, zeroY);
@@ -146,7 +145,6 @@ public final class BattleField
 				+ ", difCamY: " + ((int)camera.position.y - zeroY));
 		for(Unit unit : units.values()) {
 			if (touchUpHex.equals(unit.coord)) {
-				battlefieldLogic.passTurn();
 				Gdx.app.log("Info", "Somebody is already here");
 				return true;
 			}
@@ -187,7 +185,7 @@ public final class BattleField
 
 	void updateCamera() {
 		moveCameraToHex(cameraHexCoord);
-	};
+	}
 
 	void moveCameraBy(HexCoord hexCoord) {
 		moveCameraToHex(cameraHexCoord.sum(hexCoord));

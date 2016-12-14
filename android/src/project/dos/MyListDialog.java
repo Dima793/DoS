@@ -22,7 +22,6 @@ import android.widget.ArrayAdapter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Simple wrapper for an AlertDialog with a list of items, each of which has a display string and

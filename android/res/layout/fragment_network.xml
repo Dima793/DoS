@@ -1,27 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_network"
+    android:id="@+id/fragment_network"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="project.dos.MainActivity">
-
-    <Button
-        android:text="FIND GAME"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/clientButton"
-        android:onClick="onClientClick"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+    tools:context="project.dos.GameActivity">
 
     <TextView
-        android:text="Create a new custom game or join an already existing one."
+        android:text="@string/network_welcoming_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textView"
@@ -32,25 +18,42 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
     <Button
-        android:text="START"
+        android:text="FIND GAME"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/startButton"
-        android:onClick="onStartClick"
-        android:layout_alignParentBottom="true"
+        android:id="@+id/clientButton"
+        android:layout_below="@+id/textView"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="30dp" />
 
     <Button
         android:text="CREATE GAME"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/hostButton"
-        android:onClick="onHostClick"
-        android:elevation="0dp"
         android:layout_below="@+id/clientButton"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="STOP"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="58dp" />
+        android:layout_above="@+id/startButton"
+        android:id="@+id/stopButton"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:text="START"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/startButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

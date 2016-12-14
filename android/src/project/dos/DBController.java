@@ -5,29 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.NonNull;
-
-import com.badlogic.gdx.Gdx;
-
-import java.io.IOException;
-import java.io.ObjectStreamException;
-import java.io.StringBufferInputStream;
-import java.util.HashMap;
-import java.util.HashSet;
 
 import static project.dos.BattlefieldLogic.battlefieldLogic;
 
-public class DBController extends SQLiteOpenHelper {
-    public static  DBController dataBaseController;
+public class DBController extends SQLiteOpenHelper implements EventsListener<Creature> {
 
     DBController (Context appContext) {
         super (appContext, "mySave.db", null, 1);
-    }
-
-    public static void initialize(Context context) {
-        if (dataBaseController == null) {
-            dataBaseController = new DBController(context);
-        }
     }
 
     @Override
@@ -38,7 +22,7 @@ public class DBController extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade (SQLiteDatabase database, int old_ver, int new_ver) {
-        //probably we should throw an exeption here, but fuck it
+        //probably we should throw an exception here, but fuck it
         String query = "DROP TABLE IF EXISTS creatures";
         database.execSQL(query);
         onCreate(database);
@@ -46,7 +30,7 @@ public class DBController extends SQLiteOpenHelper {
     public void insertOrEditCreature (Creature creature) {
         SQLiteDatabase database = this.getWritableDatabase();
         String query = "SELECT * FROM creatures WHERE posX=" + creature.pos.first.toString() + " AND posY=" + creature.pos.second.toString() + ";";
-        Cursor cursor = database.rawQuery(query, null);
+        Cursor cursor = database.rawQuery(query, null);//close() should be called somewhere
         if (cursor.getCount() == 1) {
             removeCreature(creature);
             database = this.getWritableDatabase();
@@ -91,12 +75,24 @@ public class DBController extends SQLiteOpenHelper {
         StringBuilder result = new StringBuilder();
         if (cursor.moveToFirst()) {
             do {
-                result.append(retrieve(cursor) + "\n");
+                result.append(retrieve(cursor) + "\n");//String concatenation as argument to append()
             } while (cursor.moveToNext());
         }
         cursor.close();
         database.close();
         return result.toString();
+    }
+
+    @Override
+    public void listenEvent(int eventCase, Creature creature) {//insert/edit or remove creature
+        switch (eventCase) {
+            case 0:
+                insertOrEditCreature(creature);
+                break;
+            case 1:
+                removeCreature(creature);
+                break;
+        }
     }
 
     /*

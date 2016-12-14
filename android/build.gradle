@@ -21,17 +21,11 @@ android {
         applicationId "project.dos"
         minSdkVersion 9
         targetSdkVersion 25
-        jackOptions {
-            enabled true
-        }
 
     }
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
-    }
-    lintOptions {
-        abortOnError false
+        targetCompatibility 1.6
+        sourceCompatibility 1.6
     }
 }
 
@@ -82,7 +76,7 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', 'project.dos/project.dos.AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', 'project.dos/project.dos.GraphicsFragment'
 }
 
 // sets up the Android Eclipse project, using the old Ant based build.
@@ -96,8 +90,8 @@ eclipse {
     }
 
     jdt {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility = 1.6
+        targetCompatibility = 1.6
     }
 
     classpath {
@@ -140,12 +134,11 @@ idea {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.google.android.gms:play-services-nearby:10.0.0'
-
+    compile 'com.google.android.gms:play-services-nearby:10.0.0'//7.0.0 should be enough but Lint insists on the newest version
     testCompile 'junit:junit:4.12'
 }

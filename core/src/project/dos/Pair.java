@@ -18,7 +18,7 @@ public class Pair<T, U> {
     }
 
     @Override
-    public boolean equals(Object a) {
+    public boolean equals(Object a) {//should check the class of parameter
         Pair<T, U> b = (Pair<T, U>) a;
         return (first == b.first) && (second == b.second);
     }

@@ -27,22 +27,23 @@ public final class NetworkController implements
         GoogleApiClient.OnConnectionFailedListener,
         Connections.ConnectionRequestListener,
         Connections.MessageListener,
-        Connections.EndpointDiscoveryListener {
-    public static NetworkController networkController = new NetworkController();
+        Connections.EndpointDiscoveryListener,
+        EventsListener<String> {
 
     private final long TIMEOUT_ADVERTISE = 1000L * 30L;
     private final long TIMEOUT_DISCOVER = 1000L * 30L;
     private GoogleApiClient googleApiClient;
     private String serviceId;
     public boolean isHost;
-    private ArrayList<String> otherEndpointsIds = new ArrayList<>();
-    private HashMap<String, String> otherEndpointsNames = new HashMap<>();// usernames
+    public boolean isDiscovering;
+    public boolean isAdvertising;
+    private ArrayList<String> otherEndpointsIds = new ArrayList<String>();
+    private HashMap<String, String> otherEndpointsNames = new HashMap<String, String>();//usernames
 
-    private Activity activity;
     private MyListDialog myListDialog;
-    private AlertDialog connectionRequestDialog;
+    private Activity activity;
 
-    public void configure(Activity a) {
+    public NetworkController(Activity a) {
         activity = a;
         serviceId = activity.getResources().getString(R.string.service_id);
         googleApiClient = new GoogleApiClient.Builder(activity)
@@ -51,6 +52,8 @@ public final class NetworkController implements
                 .addApi(Nearby.CONNECTIONS_API)
                 .build();
         isHost = false;
+        isDiscovering = false;
+        isAdvertising = false;
     }
 
     @Override
@@ -91,7 +94,7 @@ public final class NetworkController implements
 
     @Override
     public void onEndpointLost(String endpointId) {
-        NetworkActivity.showText(otherEndpointsNames.get(endpointId) + " lost");
+        NetworkFragment.showText(otherEndpointsNames.get(endpointId) + " lost");
 
         if (myListDialog != null) {
             myListDialog.removeItemByValue(endpointId);
@@ -102,7 +105,7 @@ public final class NetworkController implements
     public void onConnectionRequest(final String endpointId, String deviceId,
                                     final String endpointName, byte[] payload) {
 
-        connectionRequestDialog = new AlertDialog.Builder(activity)
+        AlertDialog connectionRequestDialog = new AlertDialog.Builder(activity)
                 .setTitle("Connection Request")
                 .setMessage("Do you want to connect to " + endpointName + "?")
                 .setCancelable(false)
@@ -116,12 +119,12 @@ public final class NetworkController implements
                                     @Override
                                     public void onResult(Status status) {
                                         if (status.isSuccess()) {
-                                            NetworkActivity.showText("Connection succeed");
+                                            NetworkFragment.showText("Connection succeed");
                                             otherEndpointsIds.add(endpointId);
                                             otherEndpointsNames.put(endpointId, endpointName);
                                             BattlefieldLogic.battlefieldLogic.owner = 0;
                                         } else {
-                                            NetworkActivity.showText("Connection failed");
+                                            NetworkFragment.showText("Connection failed");
                                         }
                                     }
                                 });
@@ -139,7 +142,7 @@ public final class NetworkController implements
 
     @Override
     public void onMessageReceived(String endpointId, byte[] payload, boolean isReliable) {
-        //NetworkActivity.showText(otherEndpointsNames.get(endpointId) + ": " + new String(payload));
+        //NetworkFragment.showText(otherEndpointsNames.get(endpointId) + ": " + new String(payload));
         //otherEndpointsNames depends on endpointId
         String s = new String(payload);
         if (s.charAt(0) == 'A') {
@@ -152,24 +155,24 @@ public final class NetworkController implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        NetworkActivity.showText("Ready to connect");
+        NetworkFragment.showText("Ready to connect");
     }
 
     @Override
     public void onConnectionSuspended(int cause) {
-        NetworkActivity.showText("Connection suspended: " + cause);
+        NetworkFragment.showText("Connection suspended: " + cause);
 
         googleApiClient.reconnect();
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        NetworkActivity.showText("Connection failed: " + connectionResult);
+        NetworkFragment.showText("Connection failed: " + connectionResult);
     }
 
     @Override
     public void onDisconnected(String endpointId) {
-        NetworkActivity.showText(otherEndpointsNames.get(endpointId) + " disconnected");
+        NetworkFragment.showText(otherEndpointsNames.get(endpointId) + " disconnected");
     }
 
     public void onStart() {
@@ -192,12 +195,12 @@ public final class NetworkController implements
                     public void onConnectionResponse(String remoteEndpointId, Status status,
                                                      byte[] bytes) {
                         if (status.isSuccess()) {
-                            NetworkActivity.showText("Connected to " + endpointName);
+                            NetworkFragment.showText("Connected to " + endpointName);
                             otherEndpointsIds.add(endpointId);
                             otherEndpointsNames.put(endpointId, endpointName);
                             BattlefieldLogic.battlefieldLogic.owner = 1;
                         } else {
-                            NetworkActivity.showText("Connection to " + endpointName + " failed");
+                            NetworkFragment.showText("Connection to " + endpointName + " failed");
                         }
                     }
                 }, this);
@@ -206,9 +209,15 @@ public final class NetworkController implements
     public void startAdvertising() {
         //remindAboutNetworkConnection();
 
-        isHost = true;
+        if (isDiscovering) {
+            NetworkFragment.showText("Can't advertise while discovering");
+            return;
+        }
 
-        List<AppIdentifier> appIdentifierList = new ArrayList<>();
+        isHost = true;
+        isAdvertising = true;
+
+        List<AppIdentifier> appIdentifierList = new ArrayList<AppIdentifier>();
         appIdentifierList.add(new AppIdentifier(activity.getPackageName()));
         AppMetadata appMetadata = new AppMetadata(appIdentifierList);
 
@@ -218,13 +227,13 @@ public final class NetworkController implements
             @Override
             public void onResult(Connections.StartAdvertisingResult result) {
                 if (result.getStatus().isSuccess()) {
-                    NetworkActivity.showText("Advertising...");
+                    NetworkFragment.showText("Advertising...");
                 } else {
                     int statusCode = result.getStatus().getStatusCode();
                     if (statusCode == ConnectionsStatusCodes.STATUS_ALREADY_ADVERTISING) {
-                        NetworkActivity.showText("Already advertising");
+                        NetworkFragment.showText("Already advertising");
                     } else {
-                        NetworkActivity.showText("Advertising failed: " + statusCode);
+                        NetworkFragment.showText("Advertising failed: " + statusCode);
                     }
                 }
             }
@@ -234,23 +243,25 @@ public final class NetworkController implements
     public void startDiscovery() {
         //remindAboutNetworkConnection();
 
-        if (isHost) {
-            NetworkActivity.showText("Can't discover while advertising");
+        if (isAdvertising) {
+            NetworkFragment.showText("Can't discover while advertising");
             return;
         }
+
+        isDiscovering = true;
 
         Nearby.Connections.startDiscovery(googleApiClient, serviceId, TIMEOUT_DISCOVER, this)
                 .setResultCallback(new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
                         if (status.isSuccess()) {
-                            NetworkActivity.showText("Discovering...");
+                            NetworkFragment.showText("Discovering...");
                         } else {
                             int statusCode = status.getStatusCode();
                             if (statusCode == ConnectionsStatusCodes.STATUS_ALREADY_DISCOVERING) {
-                                NetworkActivity.showText("Already discovering");
+                                NetworkFragment.showText("Already discovering");
                             } else {
-                                NetworkActivity.showText("Discovering failed: " + statusCode);
+                                NetworkFragment.showText("Discovering failed: " + statusCode);
                             }
                         }
                     }
@@ -258,11 +269,20 @@ public final class NetworkController implements
     }
 
     public void stopAdvertising() {
-        Nearby.Connections.stopAdvertising(googleApiClient);
+        if (isAdvertising) {
+            Nearby.Connections.stopAdvertising(googleApiClient);
+            isAdvertising = false;
+            if (otherEndpointsIds.isEmpty()) {
+                isHost = false;
+            }
+        }
     }
 
     public void stopDiscovery() {
-        Nearby.Connections.stopDiscovery(googleApiClient, serviceId);
+        if (isDiscovering) {
+            Nearby.Connections.stopDiscovery(googleApiClient, serviceId);
+            isDiscovering = false;
+        }
     }
 
     private void remindAboutNetworkConnection() {
@@ -299,5 +319,10 @@ public final class NetworkController implements
             Nearby.Connections.sendReliableMessage(googleApiClient,
                     endpointId, message.getBytes());
         }
+    }
+
+    @Override
+    public void listenEvent(int eventCase, String message) {
+        sendMessageToAll(message);
     }
 }

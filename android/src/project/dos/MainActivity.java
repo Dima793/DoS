@@ -14,7 +14,7 @@ public class MainActivity extends Activity {
     }
 
     public void onConnectClick(View v) {
-        Intent intent = new Intent(this, NetworkActivity.class);
+        Intent intent = new Intent(this, GameActivity.class);
         startActivity(intent);
     }
 

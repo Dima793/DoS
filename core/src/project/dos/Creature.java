@@ -1,7 +1,5 @@
 package project.dos;
 
-
-import java.util.AbstractCollection;
 import java.util.ArrayList;
 
 import static project.dos.BattlefieldLogic.battlefieldLogic;
