@@ -2,6 +2,10 @@ package project.dos;
 
 import com.badlogic.gdx.Gdx;
 
+import static project.dos.BattleField.battleField;
+import static project.dos.BattleField.zeroX;
+import static project.dos.BattleField.zeroY;
+
 public class HexCoord {
     public int x;
     public int y;
@@ -39,7 +43,7 @@ public class HexCoord {
         int right = Integer.signum(difX);
         int down = Integer.signum(difY);
         difX = (difX + right * 40) / 80;//halfhexes, right
-        difY = - down * (down * (difY / 16) + 1 + right * (difX % 2)) / 2;//rounded to +- infinity full hexes, up
+        difY = - down * (down * difY / 16 + 1 + right * (difX % 2)) / 2;//rounded to +- infinity full hexes, up
         if (difY == 0 && difX % 2 != 0) {
             difY = down;
         }
@@ -51,6 +55,28 @@ public class HexCoord {
         return hexCoord;
     }
 
+    public static HexCoord pointToHex(int pointX, int pointY) {
+        pointX -= battleField.zeroX;
+        pointY -= battleField.zeroY;
+        HexCoord hexCoord = new HexCoord(0, 0, 0);
+        if (pointY == 0) {
+            pointY++;//for controversial signum cases
+        }
+        int right = Integer.signum(pointX);
+        int up = Integer.signum(pointY);
+        pointX = (pointX + right * 40) / 80;//halfhexes, right
+        pointY = up * (up * pointY / 16 + 1 + right * (pointX % 2)) / 2;//rounded to +- infinity full hexes, up
+        int parityFix = ((pointX % 2) + up) / 2;//1 from difY if difX is odd
+        hexCoord.x = pointX;
+        hexCoord.y = - pointX / 2 + pointY - parityFix;
+        hexCoord.z = - hexCoord.x - hexCoord.y;
+        return hexCoord;
+    }
+
+    public static HexCoord hexToPoint(HexCoord hexCoord) {//returns not hex but (pointX, pointY, 0)
+        return new HexCoord(zeroX + 80 * hexCoord.x, zeroY + (hexCoord.y - hexCoord.z) * 16, 0);
+    }
+
     public HexCoord sum(HexCoord hexCoord) {
         return new HexCoord(x + hexCoord.x, y + hexCoord.y, z + hexCoord.z);
     }
@@ -60,59 +86,31 @@ public class HexCoord {
     }
 
     public void shrink() {
-        int size = BattleField.fieldRadius;
-        while (x > size + 1) {
-            x -= 2;
-            y++;
-            z++;
+        if (x + y > 10) {
+            int fix = (x + y - 10 + 1) / 2;
+            x -= fix;
+            y -= fix;
         }
-        if (x > size) {
-            x--;
-            y++;
+        if (x > 10) {
+            y += x - 10;
+            x = 10;
         }
-        while (x < - size - 1) {
-            x += 2;
-            y--;
-            z--;
+        if (y > 10) {
+            x += y - 10;
+            y = 10;
         }
-        if (x < - size) {
-            x++;
-            y--;
+        while (x + y < -10) {
+            int fix = (x + y + 10 - 1) / 2;
+            x += fix;
+            y += fix;
         }
-        while (y > size + 1) {
-            y -= 2;
-            x++;
-            z++;
+        if (x < -10) {
+            y += x + 10;
+            x = -10;
         }
-        if (y > size) {
-            y--;
-            x++;
-        }
-        while (y < - size - 1) {
-            y += 2;
-            x--;
-            z--;
-        }
-        if (y < - size) {
-            y++;
-            x--;
-        }while (z > size + 1) {
-            z -= 2;
-            x++;
-            y++;
-        }
-        if (z > size) {
-            z--;
-            y++;
-        }
-        while (z < - size - 1) {
-            z += 2;
-            x--;
-            y--;
-        }
-        if (z < - size) {
-            z++;
-            y--;
+        if (y < -10) {
+            x += y + 10;
+            y = -10;
         }
     }
 }

@@ -27,8 +27,8 @@ public class GraphicsFragment extends AndroidFragmentApplication {
 		//        () -> dataBaseController.removeCreature(battlefieldLogic.creatureToSetOrRemove));
 		battlefieldLogic.creatures = new HashMap<Integer, Creature>();
 		battlefieldLogic.freeID = 0;
-		Creature starter1 = new Creature(0, new HexCoord(10, -1), battlefieldLogic.freeID++, true);
-		Creature starter2 = new Creature(1, new HexCoord(-10, 1), battlefieldLogic.freeID++, true);
+		Creature starter1 = new Creature(0, new HexCoord(-10, 1), battlefieldLogic.freeID++, true);
+		Creature starter2 = new Creature(1, new HexCoord(10, -1), battlefieldLogic.freeID++, true);
 		battlefieldLogic.creatures.put(starter1.iD, starter1);
 		battlefieldLogic.creatures.put(starter2.iD, starter2);
 		battlefieldLogic.pushToDatabase(starter1);

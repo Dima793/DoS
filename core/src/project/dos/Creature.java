@@ -30,7 +30,7 @@ public class Creature {
         pos = newPos;
         unit = new Unit(this, !initial);
     }
-
+/*
     public boolean apply(int ind, HexCoord targetPos) {
         if (ind == 0) {
             int pointsSpent = battlefieldLogic.get_dist(pos, targetPos);
@@ -56,6 +56,35 @@ public class Creature {
             return true;
         }
     }
+*/
+    public boolean apply1(HexCoord targetPos) {
+        for(Creature creature : battlefieldLogic.creatures.values())
+            if (creature.pos.equals(targetPos)) {
+                if (creature.owner == owner) {
+                    return false;
+                }
+                int pointsSpent = abilities.get(1).first;
+                if (pointsSpent > ap || battlefieldLogic.get_dist(pos, targetPos) > 1) {
+                    return false;
+                }
+                ap -= pointsSpent;
+                if (creature.owner != owner) {
+                    creature.takeHit(25);
+                }
+                battlefieldLogic.push(2, this);
+                return true;
+            }
+            int pointsSpent = battlefieldLogic.get_dist(pos, targetPos);
+            if (pointsSpent > ap) {
+                Gdx.app.log("Info", "Teleport aborted, too far");
+                return false;
+            }
+            pos = targetPos;
+            ap -= pointsSpent;
+            unit.updateSprite(targetPos);
+            battlefieldLogic.push(2, this);
+            return true;
+        }
 
     public boolean apply1(HexCoord targetPos) {
         for(Creature creature : battlefieldLogic.creatures.values())

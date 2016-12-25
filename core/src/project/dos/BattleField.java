@@ -3,17 +3,17 @@ package project.dos;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 //import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+//import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
-
-import java.util.HashMap;
 
 import static java.lang.Math.abs;
 import static project.dos.BattlefieldLogic.battlefieldLogic;
@@ -28,16 +28,17 @@ public final class BattleField extends ApplicationAdapter implements
 	private int touchDownX;
 	private int touchDownY;
 	private SpriteBatch spriteBatch;
+	private HexStage hexStage;
 	public static int currentUnit;
 	public static int totalUnitNumber;
 	public static int scrHeight;
 	public static int scrWidth;
 	public static int zeroX = 1015;
-	public static int zeroY = 467;
+	public static int zeroY = 547;
 	public static int fieldRadius = 10;
 	public static HexCoord cameraHexCoord;
 
-	private Sprite sprite;
+	//public static Sprite sprite;
 
 	@Override
 	public void create () {
@@ -50,8 +51,8 @@ public final class BattleField extends ApplicationAdapter implements
 		camera.update();
 		cameraHexCoord = new HexCoord(0, 0, 0);
 		updateCamera();
-		tiledMapRenderer = new HexagonalTiledMapRenderer(
-				new TmxMapLoader().load("BattleField1.tmx"));
+		TiledMap map = new TmxMapLoader().load("BattleField1.tmx");
+		tiledMapRenderer = new HexagonalTiledMapRenderer(map);
 		Gdx.input.setInputProcessor(this);
 
 		spriteBatch = new SpriteBatch();
@@ -66,7 +67,14 @@ public final class BattleField extends ApplicationAdapter implements
 		currentUnit = totalUnitNumber - 1;
 
 		//sprite = new Sprite(new Texture(Gdx.files.internal("Arrow.png")));
-		//sprite.setPosition(zeroX, zeroY);pushToDatabase(a);
+		//sprite.setPosition(zeroX, zeroY);
+
+		InputMultiplexer inputMultiplexer = new InputMultiplexer();
+		inputMultiplexer.addProcessor(battleField);
+		hexStage = new HexStage();
+		hexStage.getViewport().setCamera(camera);
+		inputMultiplexer.addProcessor(hexStage);
+		Gdx.input.setInputProcessor(inputMultiplexer);
 	}
 
 	@Override
@@ -89,6 +97,8 @@ public final class BattleField extends ApplicationAdapter implements
 		for (Creature creature : battlefieldLogic.creatures.values()) {
 			creature.unit.draw(spriteBatch);
 		}
+
+		hexStage.act();
 		//sprite.draw(spriteBatch);
 		spriteBatch.end();
 	}
@@ -115,7 +125,7 @@ public final class BattleField extends ApplicationAdapter implements
 				+ (camera.position.y + screenY) + ")");
 		touchDownX = screenX;
 		touchDownY = screenY;
-		return true;
+		return false;
 	}
 
 	@Override
@@ -132,29 +142,7 @@ public final class BattleField extends ApplicationAdapter implements
 			Gdx.app.log("Info", "NotMyTurn");
 			return true;
 		}
-		HexCoord touchUpHex = cameraHexCoord.sum(HexCoord.convertVectorToHex(// if hex
-				screenX - scrWidth / 2 + (int)camera.position.x - zeroX,
-				screenY - scrHeight / 2 + (int)camera.position.y - zeroY));
-		Gdx.app.log("Info", "difX: " + (screenX - scrWidth / 2)
-				+ ", difY: " + (screenY - scrHeight / 2)
-				+ ", difCamX: " + ((int)camera.position.x - zeroX)
-				+ ", difCamY: " + ((int)camera.position.y - zeroY));
-		for(Creature creature : battlefieldLogic.creatures.values()) {
-			if (touchUpHex.equals(creature.pos)) {
-				//Gdx.app.log("Info", "Somebody is already here");
-				battlefieldLogic.creatures.get(currentUnit).apply(1, creature.pos);
-				return true;
-			}
-		}
-		Unit currUnit = battlefieldLogic.creatures.get(currentUnit).unit;
-		Gdx.app.log("Info", "Trying to teleport unit №" + currentUnit
-				+ " from (" + currUnit.coord.x + ", " + currUnit.coord.y + ", " + currUnit.coord.z
-				+ ") to (" + touchUpHex.x + ", " + touchUpHex.y + ", " + touchUpHex.z + ")");
-		if (battlefieldLogic.creatures.get(currentUnit).apply(0, touchUpHex)) {
-			battlefieldLogic.passTurn();
-		}
-		Gdx.app.log("Info", "BD: " + battlefieldLogic.toOut);
-		return true;
+		return false;
 	}
 
 	@Override
@@ -200,5 +188,14 @@ public final class BattleField extends ApplicationAdapter implements
 		//Gdx.app.log("Info", "CameraMovedTo: " + cameraHexCoord.x + ", "
 		//		+ cameraHexCoord.y + ", " + cameraHexCoord.z);
 		//Gdx.app.log("Info", "(To: " + camera.position.x + ", " + camera.position.y + ")");
+	}
+
+	public void hexPressed(HexCoord hexCoord) {
+		Gdx.app.log("Info", "(" + hexCoord.x + ", " + hexCoord.y + ", " + hexCoord.z + ") pressed");
+		if (battlefieldLogic.creatures.get(currentUnit).apply1(hexCoord)) {
+			battlefieldLogic.passTurn();
+		}
+		Gdx.app.log("Info", "BD: " + battlefieldLogic.toOut);
+		return;
 	}
 }

@@ -48,7 +48,9 @@ public final class BattlefieldLogic {
         hasTurn = true;
         BattleField.currentUnitChanged();
         for (Creature cr : creatures.values()) {
-            cr.replenishAP();
+            if (cr.owner == owner) {
+                cr.replenishAP();
+            }
         }
     }
 
