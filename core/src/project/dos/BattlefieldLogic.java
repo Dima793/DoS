@@ -32,11 +32,11 @@ public final class BattlefieldLogic {
         hasTurn = false;
         int curOwner = creatures.get(BattleField.currentUnit).owner;
         BattleField.currentUnitChanged();
+        messageSender.listenEvent(0, "B");
         if (creatures.get(BattleField.currentUnit).owner == curOwner)
             getTurn();
         else
             messageSender.listenEvent(0, "A");
-        messageSender.listenEvent(0, "B");
     }
 
     public void pushToDatabase (Creature creature) {

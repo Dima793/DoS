@@ -51,7 +51,7 @@ public final class BattleField extends ApplicationAdapter implements
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, scrWidth, scrHeight);
 		camera.update();
-		camera.position.set(zeroX, zeroY, 0);
+		moveCameraTo(zeroX, zeroY);
 		TiledMap map = new TmxMapLoader().load("BattleField1.tmx");
 		tiledMapRenderer = new HexagonalTiledMapRenderer(map);
 		Gdx.input.setInputProcessor(this);
@@ -61,6 +61,9 @@ public final class BattleField extends ApplicationAdapter implements
 				+ battlefieldLogic.creatures.size());
 		for (Creature creature : battlefieldLogic.creatures.values()) {
 			creature.unit.makeSprite(creature);
+			if (creature.owner == battlefieldLogic.owner) {
+				moveCameraToHex(creature.pos);
+			}
 			Gdx.app.log("Info", "battlefieldLogic.creatures have one at: ("
 					+ creature.pos.x + ", " + creature.pos.y + ")");
 		}
@@ -134,8 +137,8 @@ public final class BattleField extends ApplicationAdapter implements
 		Gdx.app.log("Info", "TouchUp: " + screenX + ", " + screenY);
 		if (abs(touchDownX - screenX) + abs(screenY - touchDownY) > 10) {
 			//should be in touchDragged
-			camera.position.set((int) camera.position.x + touchDownX - screenX,
-					(int) camera.position.y - touchDownY + screenY, 0);
+			moveCameraTo((int) camera.position.x + touchDownX - screenX,
+					(int) camera.position.y - touchDownY + screenY);
 			hexStage.getViewport().setCamera(camera);
 			return true;
 		}
@@ -177,10 +180,29 @@ public final class BattleField extends ApplicationAdapter implements
 
 	public void hexPressed(HexCoord hexCoord) {
 		Gdx.app.log("Info", "(" + hexCoord.x + ", " + hexCoord.y + ", " + hexCoord.z + ") pressed");
-		if (battlefieldLogic.creatures.get(currentUnit).apply1(hexCoord)) {
-			battlefieldLogic.passTurn();
-		}
+		battlefieldLogic.creatures.get(currentUnit).apply1(hexCoord);
 		Gdx.app.log("Info", "BD: " + battlefieldLogic.toOut);
 		return;
+	}
+
+	private void moveCameraTo(int newCamX, int newCamY) {
+		if (newCamX < scrWidth / 2) {
+			newCamX = scrWidth / 2;
+		}
+		if (newCamX > 2000 - scrWidth / 2) {
+			newCamX = 2000 - scrWidth / 2;
+		}
+		if (newCamY < scrHeight / 2) {
+			newCamY = scrHeight / 2;
+		}
+		if (newCamY > 1006 - scrHeight / 2) {
+			newCamY = 1006 - scrHeight / 2;
+		}
+		camera.position.set(newCamX, newCamY, 0);
+	}
+
+	private void moveCameraToHex(HexCoord hexCoord) {
+		hexCoord = HexCoord.hexToPoint(hexCoord);
+		moveCameraTo(hexCoord.x, hexCoord.y);
 	}
 }
