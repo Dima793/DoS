@@ -13,12 +13,15 @@ public class Unit {
     String textureFolder;
     Sprite sprite;
 
-    Unit(Creature creature) {
+    Unit(Creature creature, boolean drawNow) {
         id = creature.iD;
         type = creature.name;
         //number = creature.number;
         textureFolder = "creatures/" + type;
         coord = creature.pos;
+        if (drawNow) {
+            makeSprite(creature);
+        }
     }
 
     public void makeSprite(Creature creature) {
@@ -30,7 +33,7 @@ public class Unit {
             filePath += "/Left.png";
         }
         sprite = new Sprite(new Texture(Gdx.files.internal(filePath)));
-        updateSprite();
+        updateSprite(creature.pos);
     }
 
     public void draw(SpriteBatch spriteBatch) {
@@ -44,12 +47,14 @@ public class Unit {
 
     public void teleportTo(HexCoord hexCoord) {
         coord = hexCoord;
-        updateSprite();
+        updateSprite(hexCoord);
     }
 
-    void updateSprite() {
-        sprite.setPosition(BattleField.zeroX - 45 + coord.x * 80,
-                BattleField.zeroY - 14 + (coord.y - coord.z) * 16);
+    void updateSprite(HexCoord newCoord) {
+        Gdx.app.log("Info", sprite.toString());
+        Gdx.app.log("Info", coord.toString());
+        sprite.setPosition(BattleField.zeroX - 45 + newCoord.x * 80,
+                BattleField.zeroY - 14 + (newCoord.y - newCoord.z) * 16);
     }
     /*
     void move(int[] path) {

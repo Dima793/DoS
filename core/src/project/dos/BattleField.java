@@ -63,7 +63,7 @@ public final class BattleField extends ApplicationAdapter implements
 					+ creature.pos.x + ", " + creature.pos.y + ")");
 		}
 		totalUnitNumber = battlefieldLogic.creatures.size();
-		currentUnit = 0;
+		currentUnit = totalUnitNumber - 1;
 
 		//sprite = new Sprite(new Texture(Gdx.files.internal("Arrow.png")));
 		//sprite.setPosition(zeroX, zeroY);pushToDatabase(a);
@@ -150,7 +150,6 @@ public final class BattleField extends ApplicationAdapter implements
 				+ " from (" + currUnit.coord.x + ", " + currUnit.coord.y + ", " + currUnit.coord.z
 				+ ") to (" + touchUpHex.x + ", " + touchUpHex.y + ", " + touchUpHex.z + ")");
 		if (battlefieldLogic.creatures.get(currentUnit).apply(0, touchUpHex)) {
-			currentUnitChanged();
 			battlefieldLogic.passTurn();
 		}
 		Gdx.app.log("Info", "BD: " + battlefieldLogic.toOut);

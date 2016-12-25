@@ -5,6 +5,8 @@ import java.util.HashMap;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static project.dos.BattleField.battleField;
+import static project.dos.BattleField.currentUnit;
+import static project.dos.BattleField.currentUnitChanged;
 
 /**
  * Created by ASUS on 28.11.2016.
@@ -74,9 +76,10 @@ public final class BattlefieldLogic {
             creatures.remove(creature.iD);
             removeFromDatabase(creature);
             BattleField.currentUnitChanged();
+            //remove sprite
         }
         else if (tp == 1){ //birth
-            creature.unit = new Unit(creature);
+            creature.unit = new Unit(creature, true);
             creatures.put(creature.iD, creature);
             pushToDatabase(creature);
             creature.unit.teleportTo(creature.pos);

@@ -19,7 +19,7 @@ public class Creature {
 
     public Creature() {}
 
-    public Creature(int newOwner, HexCoord newPos, int id) { //for the demo version there'll be just one type of creatures
+    public Creature(int newOwner, HexCoord newPos, int id, boolean initial) { //for the demo version there'll be just one type of creatures
         hp = 100;
         ap = 5;
         name = "DarkKnight";
@@ -28,7 +28,7 @@ public class Creature {
         owner = newOwner;
         iD = id;
         pos = newPos;
-        unit = new Unit(this);
+        unit = new Unit(this, !initial);
     }
 
     public boolean apply(int ind, HexCoord targetPos) {
@@ -40,6 +40,7 @@ public class Creature {
             }
             pos = targetPos;
             ap -= pointsSpent;
+            unit.updateSprite(targetPos);
             battlefieldLogic.push(1, this);
             return true;
         }
