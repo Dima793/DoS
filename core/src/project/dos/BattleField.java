@@ -58,6 +58,7 @@ public final class BattleField extends ApplicationAdapter implements
 		Gdx.app.log("Info", "battlefieldLogic.creatures.size(): "
 				+ battlefieldLogic.creatures.size());
 		for (Creature creature : battlefieldLogic.creatures.values()) {
+			creature.unit.makeSprite(creature);
 			Gdx.app.log("Info", "battlefieldLogic.creatures have one at: ("
 					+ creature.pos.x + ", " + creature.pos.y + ")");
 		}

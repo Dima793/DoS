@@ -18,6 +18,10 @@ public class Unit {
         type = creature.name;
         //number = creature.number;
         textureFolder = "creatures/" + type;
+        coord = creature.pos;
+    }
+
+    public void makeSprite(Creature creature) {
         String filePath = textureFolder;
         if (creature.getOwner() == 0) {
             filePath += "/Right.png";
@@ -26,7 +30,6 @@ public class Unit {
             filePath += "/Left.png";
         }
         sprite = new Sprite(new Texture(Gdx.files.internal(filePath)));
-        coord = creature.pos;
         updateSprite();
     }
 
