@@ -174,8 +174,13 @@ public final class BattleField extends ApplicationAdapter implements
 	}
 
 	public static void currentUnitChanged() {
-		if (++currentUnit == totalUnitNumber) {
+		if (++currentUnit == battlefieldLogic.freeID) {
 			currentUnit = 0;
+		}
+		while(battlefieldLogic.creatures.get(currentUnit) == null) {
+			if (++currentUnit == battlefieldLogic.freeID) {
+				currentUnit = 0;
+			}
 		}
 	}
 
