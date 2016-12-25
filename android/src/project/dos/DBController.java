@@ -11,7 +11,7 @@ import static project.dos.BattlefieldLogic.battlefieldLogic;
 public class DBController extends SQLiteOpenHelper implements EventsListener<Creature> {
 
     DBController (Context appContext) {
-        super (appContext, "mySave.db", null, 1);
+        super (appContext, "mySave.db", null, 2);
     }
 
     @Override
@@ -45,6 +45,7 @@ public class DBController extends SQLiteOpenHelper implements EventsListener<Cre
         values.put("iD", creature.iD);
         database.insert("creatures", null, values);
         battlefieldLogic.toOut = printAll();
+        cursor.close();
         database.close();
     }
 
