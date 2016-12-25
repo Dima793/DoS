@@ -148,6 +148,9 @@ public final class NetworkController implements
         if (s.charAt(0) == 'A') {
             BattlefieldLogic.battlefieldLogic.getTurn();
         }
+        else if (s.charAt(0) == 'B') {
+            BattleField.currentUnitChanged();
+        }
         else {
             BattlefieldLogic.battlefieldLogic.accept(s);
         }

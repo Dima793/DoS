@@ -30,8 +30,13 @@ public final class BattlefieldLogic {
 
     public void passTurn() {
         hasTurn = false;
+        int curOwner = creatures.get(BattleField.currentUnit).owner;
         BattleField.currentUnitChanged();
-        messageSender.listenEvent(0, "A");
+        if (creatures.get(BattleField.currentUnit).owner == curOwner)
+            getTurn();
+        else
+            messageSender.listenEvent(0, "A");
+        messageSender.listenEvent(0, "B");
     }
 
     public void pushToDatabase (Creature creature) {
@@ -46,7 +51,6 @@ public final class BattlefieldLogic {
 
     public void getTurn() {
         hasTurn = true;
-        BattleField.currentUnitChanged();
         for (Creature cr : creatures.values()) {
             if (cr.owner == owner) {
                 cr.replenishAP();
@@ -76,7 +80,6 @@ public final class BattlefieldLogic {
         if (tp == 0) { //death
             creatures.remove(creature.iD);
             removeFromDatabase(creature);
-            BattleField.currentUnitChanged();
             //remove sprite
         }
         else if (tp == 1){ //birth
