@@ -28,7 +28,6 @@ public final class BattleField extends ApplicationAdapter implements
 	private int touchDownX;
 	private int touchDownY;
 	private SpriteBatch spriteBatch;
-	public static HashMap<Integer, Unit> units;
 	public static int currentUnit;
 	public static int totalUnitNumber;
 	public static int scrHeight;
@@ -56,21 +55,17 @@ public final class BattleField extends ApplicationAdapter implements
 		Gdx.input.setInputProcessor(this);
 
 		spriteBatch = new SpriteBatch();
-		units = new HashMap<Integer, Unit>();//shoulb be changed to SparseArrayCompat
 		Gdx.app.log("Info", "battlefieldLogic.creatures.size(): "
 				+ battlefieldLogic.creatures.size());
-		for (CreatureHandler creature : battlefieldLogic.creatures.values()) {
+		for (Creature creature : battlefieldLogic.creatures.values()) {
 			Gdx.app.log("Info", "battlefieldLogic.creatures have one at: ("
-					+ creature.creature.pos.x + ", " + creature.creature.pos.y + ")");
+					+ creature.pos.x + ", " + creature.pos.y + ")");
 		}
-		for (CreatureHandler creature : battlefieldLogic.creatures.values()) {
-			units.put(units.size(), new Unit(creature, units.size()));
-		}
-		totalUnitNumber = units.size();
+		totalUnitNumber = battlefieldLogic.creatures.size();
 		currentUnit = 0;
 
 		//sprite = new Sprite(new Texture(Gdx.files.internal("Arrow.png")));
-		//sprite.setPosition(zeroX, zeroY);
+		//sprite.setPosition(zeroX, zeroY);pushToDatabase(a);
 	}
 
 	@Override
@@ -90,8 +85,8 @@ public final class BattleField extends ApplicationAdapter implements
 		spriteBatch.setProjectionMatrix(camera.combined);
 
 		spriteBatch.begin();
-		for (Unit unit : units.values()) {
-			unit.draw(spriteBatch);
+		for (Creature creature : battlefieldLogic.creatures.values()) {
+			creature.unit.draw(spriteBatch);
 		}
 		//sprite.draw(spriteBatch);
 		spriteBatch.end();
@@ -143,17 +138,17 @@ public final class BattleField extends ApplicationAdapter implements
 				+ ", difY: " + (screenY - scrHeight / 2)
 				+ ", difCamX: " + ((int)camera.position.x - zeroX)
 				+ ", difCamY: " + ((int)camera.position.y - zeroY));
-		for(Unit unit : units.values()) {
-			if (touchUpHex.equals(unit.coord)) {
+		for(Creature creature : battlefieldLogic.creatures.values()) {
+			if (touchUpHex.equals(creature.pos)) {
 				Gdx.app.log("Info", "Somebody is already here");
 				return true;
 			}
 		}
-		Unit currUnit = units.get(currentUnit);
+		Unit currUnit = battlefieldLogic.creatures.get(currentUnit).unit;
 		Gdx.app.log("Info", "Trying to teleport unit №" + currentUnit
 				+ " from (" + currUnit.coord.x + ", " + currUnit.coord.y + ", " + currUnit.coord.z
 				+ ") to (" + touchUpHex.x + ", " + touchUpHex.y + ", " + touchUpHex.z + ")");
-		if (units.get(currentUnit).tryTeleportTo(touchUpHex)) {
+		if (battlefieldLogic.creatures.get(currentUnit).apply(0, touchUpHex)) {
 			currentUnitChanged();
 			battlefieldLogic.passTurn();
 		}

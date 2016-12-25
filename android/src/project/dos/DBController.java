@@ -16,7 +16,7 @@ public class DBController extends SQLiteOpenHelper implements EventsListener<Cre
 
     @Override
     public void onCreate (SQLiteDatabase database) {
-        String query = "CREATE TABLE creatures (posX INTEGER, posY INTEGER, owner INTEGER, hp INTEGER, ap INTEGER, name TEXT, PRIMARY KEY (posX, posY));";
+        String query = "CREATE TABLE creatures (iD INTEGER, posX INTEGER, posY INTEGER, owner INTEGER, hp INTEGER, ap INTEGER, name TEXT, PRIMARY KEY(iD));";
         database.execSQL(query);
     }
 
@@ -29,7 +29,7 @@ public class DBController extends SQLiteOpenHelper implements EventsListener<Cre
     }
     public void insertOrEditCreature (Creature creature) {
         SQLiteDatabase database = this.getWritableDatabase();
-        String query = "SELECT * FROM creatures WHERE posX=" + creature.pos.x + " AND posY=" + creature.pos.y + ";";
+        String query = "SELECT * FROM creatures WHERE iD=" + creature.iD + ";";
         Cursor cursor = database.rawQuery(query, null);//close() should be called somewhere
         if (cursor.getCount() == 1) {
             removeCreature(creature);
@@ -42,16 +42,19 @@ public class DBController extends SQLiteOpenHelper implements EventsListener<Cre
         values.put("hp", creature.hp);
         values.put("ap", creature.ap);
         values.put("name", creature.name);
+        values.put("iD", creature.iD);
         database.insert("creatures", null, values);
         battlefieldLogic.toOut = printAll();
         database.close();
     }
+
     public void removeCreature (Creature creature) {
         SQLiteDatabase database = this.getWritableDatabase();
-        String query = "DELETE FROM creatures WHERE posX= " + creature.pos.x + " AND posY=" + creature.pos.y + ";";
+        String query = "DELETE FROM creatures WHERE iD=" + creature.iD + ";";
         database.execSQL(query);
         database.close();
     }
+
     public void removeAllCreatures () {
         SQLiteDatabase database = this.getWritableDatabase();
         database.delete("creatures", null, null);
@@ -60,11 +63,13 @@ public class DBController extends SQLiteOpenHelper implements EventsListener<Cre
 
     public Creature retrieve(Cursor c) {
         Creature creature = new Creature();
-        creature.pos = new HexCoord(c.getInt(0), c.getInt(1));
-        creature.owner = c.getInt(2);
-        creature.hp = c.getInt(3);
-        creature.ap = c.getInt(4);
-        creature.name = c.getString(5);
+        creature.iD = c.getInt(0);
+        creature.pos = new HexCoord(c.getInt(1), c.getInt(2));
+        creature.owner = c.getInt(3);
+        creature.hp = c.getInt(4);
+        creature.ap = c.getInt(5);
+        creature.name = c.getString(6);
+
         return creature;
     }
 

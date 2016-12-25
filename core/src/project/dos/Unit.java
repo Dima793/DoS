@@ -7,28 +7,26 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Unit {
     Integer id;
-    String type;
     HexCoord coord;
+    String type;
     //int number;
     String textureFolder;
     Sprite sprite;
-    CreatureHandler creatureHandler;
 
-    Unit(CreatureHandler creature, int turnID) {
-        creature.creature.turnID = turnID;
-        creatureHandler = creature;
-        type = creature.creature.name;
+    Unit(Creature creature) {
+        id = creature.iD;
+        type = creature.name;
         //number = creature.number;
         textureFolder = "creatures/" + type;
         String filePath = textureFolder;
-        if (creature.creature.getOwner() == 0) {
+        if (creature.getOwner() == 0) {
             filePath += "/Right.png";
         }
         else {
             filePath += "/Left.png";
         }
         sprite = new Sprite(new Texture(Gdx.files.internal(filePath)));
-        coord = creature.creature.pos;
+        coord = creature.pos;
         updateSprite();
     }
 
@@ -36,22 +34,6 @@ public class Unit {
         sprite.draw(spriteBatch);
     }
 
-    public boolean tryTeleportBy(HexCoord hexCoord) {
-        return tryTeleportTo(coord.sum(hexCoord));
-    }
-
-    public boolean tryTeleportTo(HexCoord hexCoord) {
-        Gdx.app.log("Info", "" + new Pair<Integer, Integer>(coord.x, coord.y).hashCode() + " "
-                + new Pair<Integer, Integer>(coord.x, coord.y).hashCode());
-        if (creatureHandler.creature.apply(0, hexCoord)) {
-            teleportTo(hexCoord);
-            return true;
-        }
-        else {
-            Gdx.app.log("Info", "Teleport aborted, too far");
-            return false;
-        }
-    }
 
     public void teleportBy(HexCoord hexCoord) {
         teleportTo(coord.sum(hexCoord));
@@ -66,7 +48,7 @@ public class Unit {
         sprite.setPosition(BattleField.zeroX - 45 + coord.x * 80,
                 BattleField.zeroY - 14 + (coord.y - coord.z) * 16);
     }
-
+    /*
     void move(int[] path) {
         for (int next : path) {
             moveByOne(next);
@@ -105,4 +87,5 @@ public class Unit {
                 0, coord);
         updateSprite();
     }
+    */
 }

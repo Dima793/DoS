@@ -12,16 +12,16 @@ import static project.dos.BattleField.battleField;
 
 public final class BattlefieldLogic {
     public static BattlefieldLogic battlefieldLogic = new BattlefieldLogic();
-
+    public static int freeID = 0;
     public boolean hasTurn = false;
     public String toOut = new String();
     public int owner;
-    public HashMap<HexCoord, CreatureHandler> creatures;
+    public HashMap<Integer, Creature> creatures;
     private EventsListener<String> messageSender;
     private EventsListener<Creature> creatureChanger;
 
     public void configure(EventsListener<String> mSender, EventsListener<Creature> cChanger) {
-        creatures = new HashMap<HexCoord, CreatureHandler>();
+        creatures = new HashMap<Integer, Creature>();
         messageSender = mSender;
         creatureChanger = cChanger;
     }
@@ -45,9 +45,9 @@ public final class BattlefieldLogic {
     public void getTurn() {
         hasTurn = true;
         BattleField.currentUnitChanged();
-        for (CreatureHandler crh : creatures.values()) {
-            if (crh.creature.getOwner() == owner)
-                crh.creature.replenishAP();
+        for (Creature cr : creatures.values()) {
+            if (cr.getOwner() == owner)
+                cr.replenishAP();
             }
     }
 
@@ -58,9 +58,9 @@ public final class BattlefieldLogic {
     public void push(int tp, Creature a) {
         if (!hasTurn)
             return;
-        if (tp == 0)
+        if (tp == 0) // death
             removeFromDatabase(a);
-        else
+        else // birth or change
             pushToDatabase(a);
         String ans = Integer.toString(tp) + ";" + a.toString();
         messageSender.listenEvent(0, ans);
@@ -69,18 +69,27 @@ public final class BattlefieldLogic {
     public void accept (String changes) {
         String[] realChanges = changes.split(";");
         Creature creature = new Creature().fromString(realChanges[1]);
-        if (Integer.parseInt(realChanges[0]) == 0) {
-            creatures.remove(creature.pos);
+        int tp = Integer.parseInt(realChanges[0]);
+        if (tp == 0) { //death
+            creatures.remove(creature.iD);
             removeFromDatabase(creature);
-            battleField.units.remove(creature.turnID);
             BattleField.currentUnitChanged();
         }
-        else {
-            CreatureHandler creatureHandler = new CreatureHandler(creature);
-            creatures.put(creature.pos, creatureHandler);
+        else if (tp == 1){ //birth
+            creature.unit = new Unit(creature);
+            creatures.put(creature.iD, creature);
             pushToDatabase(creature);
-            battleField.units.put(creature.turnID, new Unit(creatureHandler, creature.turnID));
-            battleField.units.get(creature.turnID).teleportBy(new HexCoord(0, 0, 0));
+            creature.unit.teleportTo(creature.pos);
+        }
+        else {
+            Creature creature1 = creatures.get(creature.iD);
+            creature1.owner = creature.owner;
+            creature1.pos = creature.pos;
+            creature1.hp = creature.hp;
+            creature1.ap = creature.ap;
+            creature1.name = creature.name;
+            creature1.unit.teleportTo(creature1.pos);
+            pushToDatabase(creature1);
         }
     }
 
