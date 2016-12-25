@@ -112,7 +112,7 @@ public final class NetworkController implements
                 .setPositiveButton("Connect", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        byte[] payload = null;
+                        byte[] payload = {(new Integer(otherEndpointsIds.size() + 1)).byteValue()};
                         Nearby.Connections.acceptConnectionRequest(googleApiClient,
                                 endpointId, payload, NetworkController.this)
                                 .setResultCallback(new ResultCallback<Status>() {
@@ -145,14 +145,19 @@ public final class NetworkController implements
         //NetworkFragment.showText(otherEndpointsNames.get(endpointId) + ": " + new String(payload));
         //otherEndpointsNames depends on endpointId
         String s = new String(payload);
-        if (s.charAt(0) == 'A') {
-            BattlefieldLogic.battlefieldLogic.getTurn();
+        switch (s.charAt(0)) {
+            case 'A':
+                BattlefieldLogic.battlefieldLogic.getTurn();
+                break;
+            case 'B':
+                BattleField.currentUnitChanged();
+                break;
+            default:
+                BattlefieldLogic.battlefieldLogic.accept(s);
+                break;
         }
-        else if (s.charAt(0) == 'B') {
-            BattleField.currentUnitChanged();
-        }
-        else {
-            BattlefieldLogic.battlefieldLogic.accept(s);
+        if (isHost) {
+            sendMessageToAllExcept(s, endpointId);
         }
     }
 
@@ -201,7 +206,7 @@ public final class NetworkController implements
                             NetworkFragment.showText("Connected to " + endpointName);
                             otherEndpointsIds.add(endpointId);
                             otherEndpointsNames.put(endpointId, endpointName);
-                            BattlefieldLogic.battlefieldLogic.owner = 1;
+                            BattlefieldLogic.battlefieldLogic.owner = bytes[0];
                         } else {
                             NetworkFragment.showText("Connection to " + endpointName + " failed");
                         }
@@ -318,9 +323,15 @@ public final class NetworkController implements
     }
 
     public void sendMessageToAll(String message) {// reliable message
+        sendMessageToAllExcept(message, null);
+    }
+
+    public void sendMessageToAllExcept(String message, String exceptedEndpointId) {// reliable message
         for (String endpointId : otherEndpointsIds) {
-            Nearby.Connections.sendReliableMessage(googleApiClient,
-                    endpointId, message.getBytes());
+            if (endpointId != exceptedEndpointId) {
+                Nearby.Connections.sendReliableMessage(googleApiClient,
+                        endpointId, message.getBytes());
+            }
         }
     }
 

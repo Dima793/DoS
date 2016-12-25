@@ -70,6 +70,8 @@ public final class BattleField extends ApplicationAdapter implements
 		totalUnitNumber = battlefieldLogic.creatures.size();
 		currentUnit = 0;
 
+		Gdx.app.log("Info", "battlefieldLogic.owner == " + battlefieldLogic.owner);
+
 		//sprite = new Sprite(new Texture(Gdx.files.internal("Arrow.png")));
 		//sprite.setPosition(zeroX, zeroY);
 

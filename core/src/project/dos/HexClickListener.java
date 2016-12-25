@@ -11,8 +11,6 @@ public class HexClickListener extends ClickListener{
 
     public HexClickListener(HexActor hexActor) {
         actor = hexActor;
-        Gdx.app.log("Info", "(" + actor.getCoord().x + ", " + actor.getCoord().y + ", "
-                + actor.getCoord().z + ")");
     }
 
     @Override
