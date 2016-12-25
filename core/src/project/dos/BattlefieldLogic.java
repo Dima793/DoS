@@ -61,7 +61,7 @@ public final class BattlefieldLogic {
         }
     }
 
-    public int get_dist(HexCoord a, HexCoord b) {
+    public int getDist(HexCoord a, HexCoord b) {
         return max(max(abs(a.x - b.x), abs(a.y - b.y)), abs(a.z - b.z));
     }
 

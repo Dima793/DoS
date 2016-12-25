@@ -1,6 +1,9 @@
 package project.dos;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
+
+import java.util.Vector;
 
 import static project.dos.BattleField.battleField;
 
@@ -15,6 +18,10 @@ public class HexCoord {
         z = hexZ;
     }
 
+    public HexCoord(int hexX, int hexY) {
+        this(hexX, hexY, - hexX - hexY);
+    }
+
     @Override
     public int hashCode() {
         return 11500 * x + y;
@@ -22,14 +29,7 @@ public class HexCoord {
 
     @Override
     public boolean equals(Object a) {//maybe should check the class of parameter
-        HexCoord b = (HexCoord) a;
-        return (x == b.x) && (y == b.y);
-    }
-
-    public HexCoord(int hexX, int hexY) {
-        x = hexX;
-        y = hexY;
-        z = -x - y;
+        return (x == ((HexCoord) a).x) && (y == ((HexCoord) a).y);
     }
 
     public static HexCoord pointToHex(int pointX, int pointY) {
@@ -50,9 +50,9 @@ public class HexCoord {
         return hexCoord;
     }
 
-    public static HexCoord hexToPoint(HexCoord hexCoord) {//returns not hex but (pointX, pointY, 0)
-        return new HexCoord(battleField.zeroX + 80 * hexCoord.x,
-                battleField.zeroY + (hexCoord.y - hexCoord.z) * 16, 0);
+    public static Vector2 hexToPoint(HexCoord hexCoord) {
+        return new Vector2(battleField.zeroX + 80 * hexCoord.x,
+                battleField.zeroY + (hexCoord.y - hexCoord.z) * 16);
     }
 
     public HexCoord sum(HexCoord hexCoord) {
@@ -77,7 +77,7 @@ public class HexCoord {
             x += y - 10;
             y = 10;
         }
-        while (x + y < -10) {
+        if (x + y < -10) {
             int fix = (x + y + 10 - 1) / 2;
             x += fix;
             y += fix;
@@ -90,5 +90,6 @@ public class HexCoord {
             x += y + 10;
             y = -10;
         }
+        z = - x - y;
     }
 }

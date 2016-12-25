@@ -15,17 +15,18 @@ public class Creature {
     HexCoord pos;
     public String name;
     Unit unit;
-    ArrayList<Pair<Integer, String>> abilities = new ArrayList<Pair<Integer, String>>();
+    ArrayList<Ability> abilities = new ArrayList<Ability>();
 
     public Creature() {
     }
 
-    public Creature(int newOwner, HexCoord newPos, int id, boolean initial) { //for the demo version there'll be just one type of creatures
+    //for the demo version there'll be just one type of creatures
+    public Creature(int newOwner, HexCoord newPos, int id, boolean initial) {
         hp = 100;
         ap = 5;
         name = "DarkKnight";
-        abilities.add(new Pair<Integer, String>(1, "move"));
-        abilities.add(new Pair<Integer, String>(3, "hit"));
+        abilities.add(new Ability(1, "move"));
+        abilities.add(new Ability(3, "hit"));
         owner = newOwner;
         iD = id;
         pos = newPos;
@@ -35,7 +36,7 @@ public class Creature {
     /*
         public boolean apply(int ind, HexCoord targetPos) {
             if (ind == 0) {
-                int pointsSpent = battlefieldLogic.get_dist(pos, targetPos);
+                int pointsSpent = battlefieldLogic.getDist(pos, targetPos);
                 if (pointsSpent > ap) {
                     Gdx.app.log("Info", "Teleport aborted, too far");
                     return false;
@@ -48,7 +49,7 @@ public class Creature {
             }
             else {
                 int pointsSpent = abilities.get(ind).first;
-                if (pointsSpent > ap || battlefieldLogic.get_dist(pos, targetPos) > 1)
+                if (pointsSpent > ap || battlefieldLogic.getDist(pos, targetPos) > 1)
                     return false;
                 ap -= pointsSpent;
                 Creature target = battlefieldLogic.creatures.get(targetPos);
@@ -68,8 +69,8 @@ public class Creature {
                     }
                     return false;
                 }
-                int pointsSpent = abilities.get(1).first;
-                if (pointsSpent > ap || battlefieldLogic.get_dist(pos, targetPos) > 1) {
+                int pointsSpent = abilities.get(1).number;
+                if (pointsSpent > ap || battlefieldLogic.getDist(pos, targetPos) > 1) {
                     return false;
                 }
                 if (creature.owner != owner) {
@@ -79,7 +80,7 @@ public class Creature {
                 battlefieldLogic.push(2, this);
                 return true;
             }
-        int pointsSpent = battlefieldLogic.get_dist(pos, targetPos);
+        int pointsSpent = battlefieldLogic.getDist(pos, targetPos);
         if (pointsSpent > ap) {
             Gdx.app.log("Info", "Teleport aborted, too far");
             return false;
@@ -104,8 +105,8 @@ public class Creature {
         result.ap = Integer.parseInt(params[4]);
         result.name = params[5];
         result.iD = Integer.parseInt(params[6]);
-        result.abilities.add(new Pair<Integer, String>(1, "move"));
-        result.abilities.add(new Pair<Integer, String>(3, "hit"));
+        result.abilities.add(new Ability(1, "move"));
+        result.abilities.add(new Ability(3, "hit"));
         return result;
     }
 

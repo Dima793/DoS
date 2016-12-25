@@ -4,13 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 
 import static project.dos.BattleField.battleField;
 
 public class Unit {
     Integer id;
-    HexCoord coord;
     String type;
+    Vector2 point;
     //int number;
     String textureFolder;
     Sprite sprite;
@@ -18,9 +19,9 @@ public class Unit {
     Unit(Creature creature, boolean drawNow) {
         id = creature.iD;
         type = creature.name;
+        point = HexCoord.hexToPoint(creature.pos);
         //number = creature.number;
         textureFolder = "creatures/" + type;
-        coord = creature.pos;
         if (drawNow) {
             makeSprite(creature);
         }
@@ -42,19 +43,13 @@ public class Unit {
         sprite.draw(spriteBatch);
     }
 
-
-    public void teleportBy(HexCoord hexCoord) {
-        teleportTo(coord.sum(hexCoord));
-    }
-
     public void teleportTo(HexCoord hexCoord) {
-        coord = hexCoord;
         updateSprite(hexCoord);
     }
 
     void updateSprite(HexCoord newCoord) {
-        sprite.setPosition(battleField.zeroX - 45 + newCoord.x * 80,
-                battleField.zeroY - 14 + (newCoord.y - newCoord.z) * 16);
+        point = HexCoord.hexToPoint(newCoord);
+        sprite.setPosition(point.x - 45, point.y - 14);
     }
     /*
     void move(int[] path) {

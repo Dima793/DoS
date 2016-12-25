@@ -14,6 +14,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 import static java.lang.Math.abs;
@@ -184,7 +185,7 @@ public final class BattleField extends ApplicationAdapter implements
 		return;
 	}
 
-	private void moveCameraTo(int newCamX, int newCamY) {
+	private void moveCameraTo(float newCamX, float newCamY) {
 		if (newCamX < scrWidth / 2) {
 			newCamX = scrWidth / 2;
 		}
@@ -202,7 +203,7 @@ public final class BattleField extends ApplicationAdapter implements
 	}
 
 	private void moveCameraToHex(HexCoord hexCoord) {
-		hexCoord = HexCoord.hexToPoint(hexCoord);
-		moveCameraTo(hexCoord.x, hexCoord.y);
+		Vector2 newCameraPosition = HexCoord.hexToPoint(hexCoord);
+		moveCameraTo(newCameraPosition.x, newCameraPosition.y);
 	}
 }
