@@ -3,8 +3,6 @@ package project.dos;
 import com.badlogic.gdx.Gdx;
 
 import static project.dos.BattleField.battleField;
-import static project.dos.BattleField.zeroX;
-import static project.dos.BattleField.zeroY;
 
 public class HexCoord {
     public int x;
@@ -53,7 +51,8 @@ public class HexCoord {
     }
 
     public static HexCoord hexToPoint(HexCoord hexCoord) {//returns not hex but (pointX, pointY, 0)
-        return new HexCoord(zeroX + 80 * hexCoord.x, zeroY + (hexCoord.y - hexCoord.z) * 16, 0);
+        return new HexCoord(battleField.zeroX + 80 * hexCoord.x,
+                battleField.zeroY + (hexCoord.y - hexCoord.z) * 16, 0);
     }
 
     public HexCoord sum(HexCoord hexCoord) {

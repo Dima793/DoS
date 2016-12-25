@@ -29,16 +29,16 @@ public final class BattleField extends ApplicationAdapter implements
 	private TiledMapRenderer tiledMapRenderer;
 	private int touchDownX;
 	private int touchDownY;
+	private int touchDraggedX;
+	private int touchDraggedY;
 	private SpriteBatch spriteBatch;
 	private HexStage hexStage;
-	public static int currentUnit;
-	public static int totalUnitNumber;
-	public static int scrHeight;
-	public static int scrWidth;
-	public static int zeroX = 1015;
-	public static int zeroY = 547;
-	public static int fieldRadius = 10;
-	public static HexCoord cameraHexCoord;
+	public int currentUnit;
+	public int totalUnitNumber;
+	public int scrHeight;
+	public int scrWidth;
+	public int zeroX = 1015;
+	public int zeroY = 547;
 
 	//public static Sprite sprite;
 
@@ -51,21 +51,22 @@ public final class BattleField extends ApplicationAdapter implements
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, scrWidth, scrHeight);
 		camera.update();
-		moveCameraTo(zeroX, zeroY);
 		TiledMap map = new TmxMapLoader().load("BattleField1.tmx");
 		tiledMapRenderer = new HexagonalTiledMapRenderer(map);
-		Gdx.input.setInputProcessor(this);
+
+		InputMultiplexer inputMultiplexer = new InputMultiplexer();
+		inputMultiplexer.addProcessor(battleField);
+		hexStage = new HexStage();
+		moveCameraTo(zeroX, zeroY);
+		inputMultiplexer.addProcessor(hexStage);
+		Gdx.input.setInputProcessor(inputMultiplexer);
 
 		spriteBatch = new SpriteBatch();
-		Gdx.app.log("Info", "battlefieldLogic.creatures.size(): "
-				+ battlefieldLogic.creatures.size());
 		for (Creature creature : battlefieldLogic.creatures.values()) {
 			creature.unit.makeSprite(creature);
 			if (creature.owner == battlefieldLogic.owner) {
 				moveCameraToHex(creature.pos);
 			}
-			Gdx.app.log("Info", "battlefieldLogic.creatures have one at: ("
-					+ creature.pos.x + ", " + creature.pos.y + ")");
 		}
 		totalUnitNumber = battlefieldLogic.creatures.size();
 		currentUnit = 0;
@@ -74,13 +75,6 @@ public final class BattleField extends ApplicationAdapter implements
 
 		//sprite = new Sprite(new Texture(Gdx.files.internal("Arrow.png")));
 		//sprite.setPosition(zeroX, zeroY);
-
-		InputMultiplexer inputMultiplexer = new InputMultiplexer();
-		inputMultiplexer.addProcessor(battleField);
-		hexStage = new HexStage();
-		hexStage.getViewport().setCamera(camera);
-		inputMultiplexer.addProcessor(hexStage);
-		Gdx.input.setInputProcessor(inputMultiplexer);
 	}
 
 	@Override
@@ -126,23 +120,21 @@ public final class BattleField extends ApplicationAdapter implements
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		Gdx.app.log("Info", "TouchDown: " + screenX + ", " + screenY);
-		Gdx.app.log("Info", "(To: " + (camera.position.x + screenX) + ", "
-				+ (camera.position.y + screenY) + ")");
+		//Gdx.app.log("Info", "TouchDown: " + screenX + ", " + screenY);
+		//Gdx.app.log("Info", "(To: " + (camera.position.x + screenX) + ", "
+		//		+ (camera.position.y + screenY) + ")");
 		touchDownX = screenX;
 		touchDownY = screenY;
+		touchDraggedX = touchDownX;
+		touchDraggedY = touchDownY;
 		return false;
 	}
 
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		Gdx.app.log("Info", "TouchUp: " + screenX + ", " + screenY);
+		//Gdx.app.log("Info", "TouchUp: " + screenX + ", " + screenY);
 		if (abs(touchDownX - screenX) + abs(screenY - touchDownY) > 10) {
-			//should be in touchDragged
-			moveCameraTo((int) camera.position.x + touchDownX - screenX,
-					(int) camera.position.y - touchDownY + screenY);
-			hexStage.getViewport().setCamera(camera);
-			return true;
+			return true;//it was scroll, processed in touchDragged
 		}
 
 		//move/attack/other ability or something by current unit
@@ -155,7 +147,13 @@ public final class BattleField extends ApplicationAdapter implements
 
 	@Override
 	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		//too sensitive
+		if (abs(touchDraggedX - screenX) + abs(screenY - touchDraggedY) > 10) {
+			moveCameraTo((int) camera.position.x + touchDraggedX - screenX,
+					(int) camera.position.y - touchDraggedY + screenY);
+			touchDraggedX = screenX;
+			touchDraggedY = screenY;
+			return true;
+		}
 		return false;
 	}
 
@@ -169,7 +167,7 @@ public final class BattleField extends ApplicationAdapter implements
 		return false;
 	}
 
-	public static void currentUnitChanged() {
+	public void currentUnitChanged() {
 		if (++currentUnit == battlefieldLogic.freeID) {
 			currentUnit = 0;
 		}
@@ -181,9 +179,8 @@ public final class BattleField extends ApplicationAdapter implements
 	}
 
 	public void hexPressed(HexCoord hexCoord) {
-		Gdx.app.log("Info", "(" + hexCoord.x + ", " + hexCoord.y + ", " + hexCoord.z + ") pressed");
 		battlefieldLogic.creatures.get(currentUnit).apply1(hexCoord);
-		Gdx.app.log("Info", "BD: " + battlefieldLogic.toOut);
+		//Gdx.app.log("Info", "BD: " + battlefieldLogic.toOut);
 		return;
 	}
 
@@ -197,10 +194,11 @@ public final class BattleField extends ApplicationAdapter implements
 		if (newCamY < scrHeight / 2) {
 			newCamY = scrHeight / 2;
 		}
-		if (newCamY > 1006 - scrHeight / 2) {
-			newCamY = 1006 - scrHeight / 2;
+		if (newCamY > 1000 - scrHeight / 2) {
+			newCamY = 1000 - scrHeight / 2;
 		}
 		camera.position.set(newCamX, newCamY, 0);
+		hexStage.getViewport().setCamera(camera);
 	}
 
 	private void moveCameraToHex(HexCoord hexCoord) {

@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static project.dos.BattleField.battleField;
+import static project.dos.BattlefieldLogic.battlefieldLogic;
+
 public final class NetworkController implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -122,7 +125,7 @@ public final class NetworkController implements
                                             NetworkFragment.showText("Connection succeed");
                                             otherEndpointsIds.add(endpointId);
                                             otherEndpointsNames.put(endpointId, endpointName);
-                                            BattlefieldLogic.battlefieldLogic.owner = 0;
+                                            battlefieldLogic.owner = 0;
                                         } else {
                                             NetworkFragment.showText("Connection failed");
                                         }
@@ -147,13 +150,13 @@ public final class NetworkController implements
         String s = new String(payload);
         switch (s.charAt(0)) {
             case 'A':
-                BattlefieldLogic.battlefieldLogic.getTurn();
+                battlefieldLogic.getTurn();
                 break;
             case 'B':
-                BattleField.currentUnitChanged();
+                battleField.currentUnitChanged();
                 break;
             default:
-                BattlefieldLogic.battlefieldLogic.accept(s);
+                battlefieldLogic.accept(s);
                 break;
         }
         if (isHost) {
@@ -206,7 +209,7 @@ public final class NetworkController implements
                             NetworkFragment.showText("Connected to " + endpointName);
                             otherEndpointsIds.add(endpointId);
                             otherEndpointsNames.put(endpointId, endpointName);
-                            BattlefieldLogic.battlefieldLogic.owner = bytes[0];
+                            battlefieldLogic.owner = bytes[0];
                         } else {
                             NetworkFragment.showText("Connection to " + endpointName + " failed");
                         }
@@ -328,7 +331,7 @@ public final class NetworkController implements
 
     public void sendMessageToAllExcept(String message, String exceptedEndpointId) {// reliable message
         for (String endpointId : otherEndpointsIds) {
-            if (endpointId != exceptedEndpointId) {
+            if (!endpointId.equals(exceptedEndpointId)) {
                 Nearby.Connections.sendReliableMessage(googleApiClient,
                         endpointId, message.getBytes());
             }

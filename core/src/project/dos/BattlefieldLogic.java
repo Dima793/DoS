@@ -1,12 +1,12 @@
 package project.dos;
 
+import com.badlogic.gdx.Gdx;
+
 import java.util.HashMap;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static project.dos.BattleField.battleField;
-import static project.dos.BattleField.currentUnit;
-import static project.dos.BattleField.currentUnitChanged;
 
 /**
  * Created by ASUS on 28.11.2016.
@@ -30,13 +30,16 @@ public final class BattlefieldLogic {
 
     public void passTurn() {
         hasTurn = false;
-        int curOwner = creatures.get(BattleField.currentUnit).owner;
-        BattleField.currentUnitChanged();
+        int curOwner = creatures.get(battleField.currentUnit).owner;
+        battleField.currentUnitChanged();
         messageSender.listenEvent(0, "B");
-        if (creatures.get(BattleField.currentUnit).owner == curOwner)
+        if (creatures.get(battleField.currentUnit).owner == curOwner) {
             getTurn();
-        else
+            Gdx.app.log("Info", "getTurn in passTurn");
+        }
+        else {
             messageSender.listenEvent(0, "A");
+        }
     }
 
     public void pushToDatabase (Creature creature) {

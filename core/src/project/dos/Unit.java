@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import static project.dos.BattleField.battleField;
+
 public class Unit {
     Integer id;
     HexCoord coord;
@@ -51,10 +53,8 @@ public class Unit {
     }
 
     void updateSprite(HexCoord newCoord) {
-        Gdx.app.log("Info", sprite.toString());
-        Gdx.app.log("Info", coord.toString());
-        sprite.setPosition(BattleField.zeroX - 45 + newCoord.x * 80,
-                BattleField.zeroY - 14 + (newCoord.y - newCoord.z) * 16);
+        sprite.setPosition(battleField.zeroX - 45 + newCoord.x * 80,
+                battleField.zeroY - 14 + (newCoord.y - newCoord.z) * 16);
     }
     /*
     void move(int[] path) {
