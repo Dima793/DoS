@@ -177,9 +177,7 @@ public final class BattleField extends ApplicationAdapter implements
 
 	public void hexPressed(HexCoord hexCoord) {
 		Gdx.app.log("Info", "(" + hexCoord.x + ", " + hexCoord.y + ", " + hexCoord.z + ") pressed");
-		if (battlefieldLogic.creatures.get(currentUnit).apply1(hexCoord)) {
-			battlefieldLogic.passTurn();
-		}
+		if (battlefieldLogic.creatures.get(currentUnit).apply1(hexCoord)) {}
 		Gdx.app.log("Info", "BD: " + battlefieldLogic.toOut);
 		return;
 	}

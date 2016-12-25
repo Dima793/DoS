@@ -63,6 +63,8 @@ public class Creature {
         for (Creature creature : battlefieldLogic.creatures.values())
             if (creature.pos.equals(targetPos)) {
                 if (creature.owner == owner) {
+                    if (creature.iD == iD)
+                        battlefieldLogic.passTurn();
                     return false;
                 }
                 int pointsSpent = abilities.get(1).first;
