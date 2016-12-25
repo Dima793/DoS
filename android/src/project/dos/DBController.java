@@ -29,15 +29,15 @@ public class DBController extends SQLiteOpenHelper implements EventsListener<Cre
     }
     public void insertOrEditCreature (Creature creature) {
         SQLiteDatabase database = this.getWritableDatabase();
-        String query = "SELECT * FROM creatures WHERE posX=" + creature.pos.first.toString() + " AND posY=" + creature.pos.second.toString() + ";";
+        String query = "SELECT * FROM creatures WHERE posX=" + creature.pos.x + " AND posY=" + creature.pos.y + ";";
         Cursor cursor = database.rawQuery(query, null);//close() should be called somewhere
         if (cursor.getCount() == 1) {
             removeCreature(creature);
             database = this.getWritableDatabase();
         }
         ContentValues values = new ContentValues();
-        values.put("posX", creature.pos.first);
-        values.put("posY", creature.pos.second);
+        values.put("posX", creature.pos.x);
+        values.put("posY", creature.pos.y);
         values.put("owner", creature.getOwner());
         values.put("hp", creature.hp);
         values.put("ap", creature.ap);
@@ -48,7 +48,7 @@ public class DBController extends SQLiteOpenHelper implements EventsListener<Cre
     }
     public void removeCreature (Creature creature) {
         SQLiteDatabase database = this.getWritableDatabase();
-        String query = "DELETE FROM creatures WHERE posX= " + creature.pos.first.toString() + " AND posY=" + creature.pos.second.toString() + ";";
+        String query = "DELETE FROM creatures WHERE posX= " + creature.pos.x + " AND posY=" + creature.pos.y + ";";
         database.execSQL(query);
         database.close();
     }
@@ -60,7 +60,7 @@ public class DBController extends SQLiteOpenHelper implements EventsListener<Cre
 
     public Creature retrieve(Cursor c) {
         Creature creature = new Creature();
-        creature.pos = new Pair<Integer, Integer>(c.getInt(0), c.getInt(1));
+        creature.pos = new HexCoord(c.getInt(0), c.getInt(1));
         creature.owner = c.getInt(2);
         creature.hp = c.getInt(3);
         creature.ap = c.getInt(4);

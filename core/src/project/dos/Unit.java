@@ -28,8 +28,7 @@ public class Unit {
             filePath += "/Left.png";
         }
         sprite = new Sprite(new Texture(Gdx.files.internal(filePath)));
-        coord = new HexCoord(creature.creature.pos.first, creature.creature.pos.second,
-                - creature.creature.pos.first - creature.creature.pos.second);
+        coord = creature.creature.pos;
         updateSprite();
     }
 
@@ -44,7 +43,7 @@ public class Unit {
     public boolean tryTeleportTo(HexCoord hexCoord) {
         Gdx.app.log("Info", "" + new Pair<Integer, Integer>(coord.x, coord.y).hashCode() + " "
                 + new Pair<Integer, Integer>(coord.x, coord.y).hashCode());
-        if (creatureHandler.creature.apply(0, new Pair<Integer, Integer>(hexCoord.x, hexCoord.y))) {
+        if (creatureHandler.creature.apply(0, hexCoord)) {
             teleportTo(hexCoord);
             return true;
         }
@@ -103,7 +102,7 @@ public class Unit {
         }
         //animation
         creatureHandler.creature.apply(
-                0, new Pair<Integer, Integer>(coord.x, coord.y));
+                0, coord);
         updateSprite();
     }
 }

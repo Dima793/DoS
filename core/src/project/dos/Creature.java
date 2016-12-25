@@ -10,13 +10,13 @@ import static project.dos.BattlefieldLogic.battlefieldLogic;
 
 public class Creature {
     public int hp, ap, turnID, owner;
-    public Pair<Integer, Integer> pos;
+    HexCoord pos;
     public String name;
     ArrayList<Pair<Integer, String>> abilities = new ArrayList<Pair<Integer, String>>();
 
     public Creature() {}
 
-    public Creature(int newOwner, Pair<Integer, Integer> newPos) { //for the demo version there'll be just one type of creatures
+    public Creature(int newOwner, HexCoord newPos) { //for the demo version there'll be just one type of creatures
         hp = 100;
         ap = 5;
         name = "DarkKnight";
@@ -26,7 +26,7 @@ public class Creature {
         pos = newPos;
     }
 
-    public boolean apply(int ind, Pair<Integer, Integer> targetPos) {
+    public boolean apply(int ind, HexCoord targetPos) {
         if (ind == 0) {
             int pointsSpent = battlefieldLogic.get_dist(pos, targetPos);
             if (pointsSpent > ap)
@@ -52,13 +52,13 @@ public class Creature {
     }
 
     public String toString() {
-        return "" + pos.first + " " + pos.second + " " + owner + " " + hp + " " + ap + " " + name;
+        return "" + pos.x + " " + pos.y + " " + owner + " " + hp + " " + ap + " " + name;
     }
 
     public Creature fromString(String s) {
         String[] params = s.split(" ");
         Creature result = new Creature();
-        result.pos = new Pair<Integer, Integer>(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
+        result.pos = new HexCoord(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
         result.owner = Integer.parseInt(params[2]);
         result.hp = Integer.parseInt(params[3]);
         result.ap = Integer.parseInt(params[4]);

@@ -13,6 +13,23 @@ public class HexCoord {
         z = hexZ;
     }
 
+    @Override
+    public int hashCode() {
+        return 11500 * x + y;
+    }
+
+    @Override
+    public boolean equals(Object a) {//should check the class of parameter
+        HexCoord b = (HexCoord) a;
+        return (x == b.x) && (y == b.y);
+    }
+
+    public HexCoord(int hexX, int hexY) {
+        x = hexX;
+        y = hexY;
+        z = -x - y;
+    }
+
     public static HexCoord convertVectorToHex(int difX, int difY) {
         Gdx.app.log("Info", "Convert: " + difX + ", " + difY);
         HexCoord hexCoord = new HexCoord(0, 0, 0);

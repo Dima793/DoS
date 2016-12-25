@@ -10,19 +10,18 @@ import static project.dos.BattleField.battleField;
  * Created by ASUS on 28.11.2016.
  */
 
-@SuppressWarnings("ALL")
 public final class BattlefieldLogic {
     public static BattlefieldLogic battlefieldLogic = new BattlefieldLogic();
 
     public boolean hasTurn = false;
     public String toOut = new String();
     public int owner;
-    public HashMap<Pair<Integer, Integer>, CreatureHandler> creatures;
+    public HashMap<HexCoord, CreatureHandler> creatures;
     private EventsListener<String> messageSender;
     private EventsListener<Creature> creatureChanger;
 
     public void configure(EventsListener<String> mSender, EventsListener<Creature> cChanger) {
-        creatures = new HashMap<Pair<Integer, Integer>, CreatureHandler>();
+        creatures = new HashMap<HexCoord, CreatureHandler>();
         messageSender = mSender;
         creatureChanger = cChanger;
     }
@@ -52,9 +51,8 @@ public final class BattlefieldLogic {
             }
     }
 
-    public int get_dist(Pair<Integer, Integer> a, Pair<Integer, Integer> b) {
-        int az = -a.first - a.second, bz = -b.first - b.second;
-        return max(max(abs(a.first - b.first), abs(a.second - b.second)), abs(az - bz));
+    public int get_dist(HexCoord a, HexCoord b) {
+        return max(max(abs(a.x - b.x), abs(a.y - b.y)), abs(a.z - b.z));
     }
 
     public void push(int tp, Creature a) {

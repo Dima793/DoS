@@ -61,7 +61,7 @@ public final class BattleField extends ApplicationAdapter implements
 				+ battlefieldLogic.creatures.size());
 		for (CreatureHandler creature : battlefieldLogic.creatures.values()) {
 			Gdx.app.log("Info", "battlefieldLogic.creatures have one at: ("
-					+ creature.creature.pos.first + ", " + creature.creature.pos.second + ")");
+					+ creature.creature.pos.x + ", " + creature.creature.pos.y + ")");
 		}
 		for (CreatureHandler creature : battlefieldLogic.creatures.values()) {
 			units.put(units.size(), new Unit(creature, units.size()));

@@ -31,7 +31,7 @@ public class HireFragment extends Fragment {
         desc = (TextView) v.findViewById(R.id.descriptionText);
         pointsText = (TextView) v.findViewById(R.id.pointsText);
         pointsText.setText(Integer.toString(pointsLeft));
-        creatures.add(new Creature(0, new Pair<Integer, Integer>(0, 0)));
+        creatures.add(new Creature(0, new HexCoord(0, 0)));
         number.add(0);
         spinner = (Spinner) v.findViewById(R.id.spinner);
         //spinner.add
