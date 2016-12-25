@@ -27,8 +27,8 @@ public class Creature {
         abilities.add(new Pair<Integer, String>(3, "hit"));
         owner = newOwner;
         iD = id;
-        unit = new Unit(this);
         pos = newPos;
+        unit = new Unit(this);
     }
 
     public boolean apply(int ind, HexCoord targetPos) {
