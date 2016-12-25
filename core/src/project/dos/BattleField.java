@@ -14,6 +14,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector3;
 
 import static java.lang.Math.abs;
 import static project.dos.BattlefieldLogic.battlefieldLogic;
@@ -22,6 +23,7 @@ public final class BattleField extends ApplicationAdapter implements
 		ApplicationListener,
 		InputProcessor {
 	public static BattleField battleField = new BattleField();
+	private Vector3 last_touch_down = new Vector3();
 
 	private OrthographicCamera camera;
 	private TiledMapRenderer tiledMapRenderer;
@@ -49,8 +51,7 @@ public final class BattleField extends ApplicationAdapter implements
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, scrWidth, scrHeight);
 		camera.update();
-		cameraHexCoord = new HexCoord(0, 0, 0);
-		updateCamera();
+		camera.position.set(zeroX, zeroY, 0);
 		TiledMap map = new TmxMapLoader().load("BattleField1.tmx");
 		tiledMapRenderer = new HexagonalTiledMapRenderer(map);
 		Gdx.input.setInputProcessor(this);
@@ -64,7 +65,7 @@ public final class BattleField extends ApplicationAdapter implements
 					+ creature.pos.x + ", " + creature.pos.y + ")");
 		}
 		totalUnitNumber = battlefieldLogic.creatures.size();
-		currentUnit = totalUnitNumber - 1;
+		currentUnit = 0;
 
 		//sprite = new Sprite(new Texture(Gdx.files.internal("Arrow.png")));
 		//sprite.setPosition(zeroX, zeroY);
@@ -133,7 +134,9 @@ public final class BattleField extends ApplicationAdapter implements
 		Gdx.app.log("Info", "TouchUp: " + screenX + ", " + screenY);
 		if (abs(touchDownX - screenX) + abs(screenY - touchDownY) > 10) {
 			//should be in touchDragged
-			moveCameraBy(HexCoord.convertVectorToHex(touchDownX - screenX, screenY - touchDownY));
+			camera.position.set((int) camera.position.x + touchDownX - screenX,
+					(int) camera.position.y - touchDownY + screenY, 0);
+			hexStage.getViewport().setCamera(camera);
 			return true;
 		}
 
@@ -170,24 +173,6 @@ public final class BattleField extends ApplicationAdapter implements
 				currentUnit = 0;
 			}
 		}
-	}
-
-	void updateCamera() {
-		moveCameraToHex(cameraHexCoord);
-	}
-
-	void moveCameraBy(HexCoord hexCoord) {
-		moveCameraToHex(cameraHexCoord.sum(hexCoord));
-	}
-
-	void moveCameraToHex(HexCoord hexCoord) {//try
-		hexCoord.shrink();
-		camera.position.set(zeroX + hexCoord.x * 80, zeroY - (hexCoord.y - hexCoord.z) * 16, 0);
-		//cameraHexCoord = HexCoord.convertVectorToHex(
-		//		(int)camera.position.x - zeroX, (int)camera.position.y - zeroY);
-		//Gdx.app.log("Info", "CameraMovedTo: " + cameraHexCoord.x + ", "
-		//		+ cameraHexCoord.y + ", " + cameraHexCoord.z);
-		//Gdx.app.log("Info", "(To: " + camera.position.x + ", " + camera.position.y + ")");
 	}
 
 	public void hexPressed(HexCoord hexCoord) {

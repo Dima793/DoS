@@ -17,7 +17,8 @@ public class Creature {
     Unit unit;
     ArrayList<Pair<Integer, String>> abilities = new ArrayList<Pair<Integer, String>>();
 
-    public Creature() {}
+    public Creature() {
+    }
 
     public Creature(int newOwner, HexCoord newPos, int id, boolean initial) { //for the demo version there'll be just one type of creatures
         hp = 100;
@@ -30,35 +31,36 @@ public class Creature {
         pos = newPos;
         unit = new Unit(this, !initial);
     }
-/*
-    public boolean apply(int ind, HexCoord targetPos) {
-        if (ind == 0) {
-            int pointsSpent = battlefieldLogic.get_dist(pos, targetPos);
-            if (pointsSpent > ap) {
-                Gdx.app.log("Info", "Teleport aborted, too far");
-                return false;
+
+    /*
+        public boolean apply(int ind, HexCoord targetPos) {
+            if (ind == 0) {
+                int pointsSpent = battlefieldLogic.get_dist(pos, targetPos);
+                if (pointsSpent > ap) {
+                    Gdx.app.log("Info", "Teleport aborted, too far");
+                    return false;
+                }
+                pos = targetPos;
+                ap -= pointsSpent;
+                unit.updateSprite(targetPos);
+                battlefieldLogic.push(2, this);
+                return true;
             }
-            pos = targetPos;
-            ap -= pointsSpent;
-            unit.updateSprite(targetPos);
-            battlefieldLogic.push(2, this);
-            return true;
+            else {
+                int pointsSpent = abilities.get(ind).first;
+                if (pointsSpent > ap || battlefieldLogic.get_dist(pos, targetPos) > 1)
+                    return false;
+                ap -= pointsSpent;
+                Creature target = battlefieldLogic.creatures.get(targetPos);
+                if (target.owner != owner)
+                    target.takeHit(25);
+                battlefieldLogic.push(2, this);
+                return true;
+            }
         }
-        else {
-            int pointsSpent = abilities.get(ind).first;
-            if (pointsSpent > ap || battlefieldLogic.get_dist(pos, targetPos) > 1)
-                return false;
-            ap -= pointsSpent;
-            Creature target = battlefieldLogic.creatures.get(targetPos);
-            if (target.owner != owner)
-                target.takeHit(25);
-            battlefieldLogic.push(2, this);
-            return true;
-        }
-    }
-*/
+    */
     public boolean apply1(HexCoord targetPos) {
-        for(Creature creature : battlefieldLogic.creatures.values())
+        for (Creature creature : battlefieldLogic.creatures.values())
             if (creature.pos.equals(targetPos)) {
                 if (creature.owner == owner) {
                     return false;
@@ -71,32 +73,6 @@ public class Creature {
                 if (creature.owner != owner) {
                     creature.takeHit(25);
                 }
-                battlefieldLogic.push(2, this);
-                return true;
-            }
-            int pointsSpent = battlefieldLogic.get_dist(pos, targetPos);
-            if (pointsSpent > ap) {
-                Gdx.app.log("Info", "Teleport aborted, too far");
-                return false;
-            }
-            pos = targetPos;
-            ap -= pointsSpent;
-            unit.updateSprite(targetPos);
-            battlefieldLogic.push(2, this);
-            return true;
-        }
-
-    public boolean apply1(HexCoord targetPos) {
-        for(Creature creature : battlefieldLogic.creatures.values())
-            if (creature.pos == targetPos) {
-                if (creature.owner == owner)
-                    return false;
-                int pointsSpent = abilities.get(1).first;
-                if (pointsSpent > ap || battlefieldLogic.get_dist(pos, targetPos) > 1)
-                    return false;
-                ap -= pointsSpent;
-                if (creature.owner != owner)
-                    creature.takeHit(25);
                 battlefieldLogic.push(2, this);
                 return true;
             }
