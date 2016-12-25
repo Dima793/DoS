@@ -141,7 +141,8 @@ public final class BattleField extends ApplicationAdapter implements
 				+ ", difCamY: " + ((int)camera.position.y - zeroY));
 		for(Creature creature : battlefieldLogic.creatures.values()) {
 			if (touchUpHex.equals(creature.pos)) {
-				Gdx.app.log("Info", "Somebody is already here");
+				//Gdx.app.log("Info", "Somebody is already here");
+				battlefieldLogic.creatures.get(currentUnit).apply(1, creature.pos);
 				return true;
 			}
 		}

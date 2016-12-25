@@ -41,7 +41,7 @@ public class Creature {
             pos = targetPos;
             ap -= pointsSpent;
             unit.updateSprite(targetPos);
-            battlefieldLogic.push(1, this);
+            battlefieldLogic.push(2, this);
             return true;
         }
         else {
@@ -52,7 +52,7 @@ public class Creature {
             Creature target = battlefieldLogic.creatures.get(targetPos);
             if (target.owner != owner)
                 target.takeHit(25);
-            battlefieldLogic.push(1, this);
+            battlefieldLogic.push(2, this);
             return true;
         }
     }
@@ -80,7 +80,7 @@ public class Creature {
         if (hp <= 0)
             battlefieldLogic.kill(this);
         else {
-            battlefieldLogic.push(1, this);
+            battlefieldLogic.push(2, this);
         }
     }
 

@@ -48,9 +48,8 @@ public final class BattlefieldLogic {
         hasTurn = true;
         BattleField.currentUnitChanged();
         for (Creature cr : creatures.values()) {
-            if (cr.getOwner() == owner)
-                cr.replenishAP();
-            }
+            cr.replenishAP();
+        }
     }
 
     public int get_dist(HexCoord a, HexCoord b) {
