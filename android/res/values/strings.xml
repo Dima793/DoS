@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">DoS</string>
+    <string name="service_id">project.dos</string>
+    <string name="network_welcoming_message">Create a new custom game or join an already existing one.</string>
+    <string name="help_message">Some basic tips on how to play this game and other useful information will be represented here. Hopefully.</string>
+    <string name="main_welcoming_message">Welcome to demo-version of Duel of Strategists!</string>
+
+</resources>
