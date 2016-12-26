@@ -65,7 +65,7 @@ public final class BattleField extends ApplicationAdapter implements
 
 		spriteBatch = new SpriteBatch();
 		for (Creature creature : battlefieldLogic.creatures.values()) {
-			creature.unit.makeSprite(creature.pos);
+			creature.unit.makeSprites(creature.pos);
 			if (creature.owner == battlefieldLogic.owner) {
 				moveCameraToHex(creature.pos);
 			}

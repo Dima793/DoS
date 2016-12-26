@@ -28,6 +28,7 @@ public class Unit {
     private State state;
     private Orientation orientation;
     private float animationTime;
+    public boolean hasNoSprites;
 
 
     Unit(Creature creature, boolean drawNow) {
@@ -36,19 +37,21 @@ public class Unit {
         type = creature.name;
         position = getHexCorner(HexCoord.hexToPoint(creature.pos));
         state = State.STAND;
-        if (creature.pos.x < 0) {
+        if (creature.pos.x > 0) {
             orientation = Orientation.LEFT;
         }
         else {
             orientation = Orientation.RIGHT;
         }
         textureFolder = "creatures/" + type + creature.getOwner() + "/";
+        hasNoSprites = true;
         if (drawNow) {
             updateSprite(creature.pos);
         }
     }
 
-    public void makeSprite(HexCoord coord) {
+    public void makeSprites(HexCoord coord) {
+        Gdx.app.log("Info", "makeSprites at (" + coord.x + ", " + coord.y + ", " + coord.z + ")");
         spriteLeft = new Sprite(new Texture(
                 Gdx.files.internal(textureFolder + "STANDLEFT.png")));
         spriteRight = new Sprite(new Texture(
@@ -74,9 +77,13 @@ public class Unit {
         }
         moveRight = new Animation(0.05f, walkFrames);
         updateSprite(coord);
+        hasNoSprites = false;
     }
 
     public void draw(SpriteBatch spriteBatch, float time) {
+        if (hasNoSprites) {
+            makeSprites(HexCoord.pointToHex((int) position.x, (int) position.y));
+        }
         if (state == State.STAND) {
             getSprite().draw(spriteBatch);
             return;
