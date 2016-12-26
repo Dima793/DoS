@@ -50,7 +50,7 @@ public class GraphicsFragment extends AndroidFragmentApplication {
 					case 5:
 						startPos = new HexCoord(5, -10);
 						break;
-					}
+				}
 				Creature starter = new Creature(i, startPos, battlefieldLogic.freeID++, true);
 				battlefieldLogic.creatures.put(starter.iD, starter);
 				battlefieldLogic.pushToDatabase(starter);
