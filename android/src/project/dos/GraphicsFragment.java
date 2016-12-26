@@ -36,9 +36,6 @@ public class GraphicsFragment extends AndroidFragmentApplication {
 		if (activity.networkController.isHost) {
 			battlefieldLogic.getTurn();
 		}
-		else {
-			battleField.currentUnitChanged();
-		}
 		return initializeForView(battleField);
 	}
 }

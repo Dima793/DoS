@@ -104,7 +104,7 @@ public final class BattlefieldLogic {
     }
 
     public void kill(Creature killed) {
-        creatures.remove(killed.pos);
+        creatures.remove(killed.iD);
         push(0, killed);
     }
 }
