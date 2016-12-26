@@ -46,6 +46,10 @@ public final class NetworkController implements
     private MyListDialog myListDialog;
     private Activity activity;
 
+    public int getNumberOfPlayers() {
+        return otherEndpointsIds.size() + 1;
+    }
+
     public NetworkController(Activity a) {
         activity = a;
         serviceId = activity.getResources().getString(R.string.service_id);
@@ -150,7 +154,9 @@ public final class NetworkController implements
         String s = new String(payload);
         switch (s.charAt(0)) {
             case 'A':
-                battlefieldLogic.getTurn();
+                int newOwner = Integer.parseInt(s.split(" ")[1]);
+                if (battlefieldLogic.owner == newOwner)
+                    battlefieldLogic.getTurn();
                 break;
             case 'B':
                 battleField.currentUnitChanged();

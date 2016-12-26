@@ -33,7 +33,7 @@ public class Unit {
         position = getHexCorner(HexCoord.hexToPoint(creature.pos));
         state = State.STAND;
         textureFolder = "creatures/" + type;
-        if (creature.getOwner() == 0) {
+        if (creature.pos.x < 0) {
             textureFolder += "/Right/";
         }
         else {

@@ -33,12 +33,13 @@ public final class BattlefieldLogic {
         int curOwner = creatures.get(battleField.currentUnit).owner;
         battleField.currentUnitChanged();
         messageSender.listenEvent(0, "B");
-        if (creatures.get(battleField.currentUnit).owner == curOwner) {
+        int newOwner = creatures.get(battleField.currentUnit).owner;
+        if (newOwner == curOwner) {
             getTurn();
             Gdx.app.log("Info", "getTurn in passTurn");
         }
         else {
-            messageSender.listenEvent(0, "A");
+            messageSender.listenEvent(0, "A " + newOwner);
         }
     }
 
