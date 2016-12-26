@@ -24,7 +24,7 @@ public class Creature {
     public Creature(int newOwner, HexCoord newPos, int id, boolean initial) {
         hp = 100;
         ap = 5;
-        name = "DarkKnight";
+        name = "Knight";
         abilities.add(new Ability(1, "move"));
         abilities.add(new Ability(3, "hit"));
         owner = newOwner;

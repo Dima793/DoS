@@ -12,6 +12,7 @@ import static project.dos.BattleField.battleField;
 
 public class Unit {
     enum State {STAND, MOVE}
+    enum Orientation {RIGHT, LEFT}
 
     private Integer id;
     //private int number;
@@ -20,9 +21,12 @@ public class Unit {
     Vector2 initialPosition;
     Vector2 deltaPosition;
     private String textureFolder;
-    private Sprite sprite;
-    private Animation moveAnimation;
+    private Sprite spriteLeft;
+    private Sprite spriteRight;
+    private Animation moveLeft;
+    private Animation moveRight;
     private State state;
+    private Orientation orientation;
     private float animationTime;
 
 
@@ -32,22 +36,25 @@ public class Unit {
         type = creature.name;
         position = getHexCorner(HexCoord.hexToPoint(creature.pos));
         state = State.STAND;
-        textureFolder = "creatures/" + type;
-        if (creature.getOwner() == 0) {
-            textureFolder += "/Right/";
+        if (creature.pos.x < 0) {
+            orientation = Orientation.LEFT;
         }
         else {
-            textureFolder += "/Left/";
+            orientation = Orientation.RIGHT;
         }
+        textureFolder = "creatures/" + type + creature.getOwner() + "/";
         if (drawNow) {
             updateSprite(creature.pos);
         }
     }
 
     public void makeSprite(HexCoord coord) {
-        sprite = new Sprite(new Texture(Gdx.files.internal(textureFolder + "0.png")));
-        TextureRegion[][] tmp = TextureRegion.split(
-                new Texture(Gdx.files.internal(textureFolder + "move.png")), 96, 64);
+        spriteLeft = new Sprite(new Texture(
+                Gdx.files.internal(textureFolder + "STANDLEFT.png")));
+        spriteRight = new Sprite(new Texture(
+                Gdx.files.internal(textureFolder + "STANDRIGHT.png")));
+        TextureRegion[][] tmp = TextureRegion.split(new Texture(
+                Gdx.files.internal(textureFolder + "MOVELEFT.png")), 96, 64);
         TextureRegion[] walkFrames = new TextureRegion[8];
         int index = 0;
         for (int i = 0; i < 2; i++) {
@@ -55,21 +62,27 @@ public class Unit {
                 walkFrames[index++] = tmp[i][j];
             }
         }
-        moveAnimation = new Animation(0.05f, walkFrames);
+        moveLeft = new Animation(0.05f, walkFrames);
+        tmp = TextureRegion.split(new Texture(
+                Gdx.files.internal(textureFolder + "MOVERIGHT" + ".png")), 96, 64);
+        walkFrames = new TextureRegion[8];
+        index = 0;
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 4; j++) {
+                walkFrames[index++] = tmp[i][j];
+            }
+        }
+        moveRight = new Animation(0.05f, walkFrames);
         updateSprite(coord);
     }
 
     public void draw(SpriteBatch spriteBatch, float time) {
-        switch (state) {
-            case STAND:
-                sprite.draw(spriteBatch);
-                break;
-            case MOVE:
-                setAnimationPosition(time - animationTime);
-                spriteBatch.draw(moveAnimation.getKeyFrame(time, true), position.x, position.y);
-                break;
+        if (state == State.STAND) {
+            getSprite().draw(spriteBatch);
+            return;
         }
-
+        setAnimationPosition(time - animationTime);
+        spriteBatch.draw(getAnimation().getKeyFrame(time, true), position.x, position.y);
     }
 
     public void teleportTo(HexCoord hexCoord) {
@@ -82,12 +95,18 @@ public class Unit {
         deltaPosition.x -= position.x;
         deltaPosition.y -= position.y;
         animationTime = battleField.stateTime;
+        if (deltaPosition.x < 0) {
+            orientation = Orientation.LEFT;
+        }
+        else {
+            orientation = Orientation.RIGHT;
+        }
         state = State.MOVE;
     }
 
     public void updateSprite(HexCoord newCoord) {
         position = getHexCorner(HexCoord.hexToPoint(newCoord));
-        sprite.setPosition(position.x, position.y);
+        getSprite().setPosition(position.x, position.y);
     }
 
     private void setAnimationPosition(float delta) {
@@ -95,11 +114,25 @@ public class Unit {
             position = new Vector2(
                     initialPosition.x + deltaPosition.x, initialPosition.y + deltaPosition.y);
             state = State.STAND;
-            sprite.setPosition(position.x, position.y);
+            getSprite().setPosition(position.x, position.y);
             return;
         }
         position.x = initialPosition.x + (int) (delta * deltaPosition.x);
         position.y = initialPosition.y + (int) (delta * deltaPosition.y);
+    }
+
+    private Animation getAnimation() {
+        if (orientation == Orientation.LEFT) {
+            return moveLeft;
+        }
+        return moveRight;
+    }
+
+    private Sprite getSprite() {
+        if (orientation == Orientation.LEFT) {
+            return spriteLeft;
+        }
+        return spriteRight;
     }
 
     private Vector2 getHexCorner(Vector2 point) {

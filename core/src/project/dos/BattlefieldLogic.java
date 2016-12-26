@@ -33,12 +33,13 @@ public final class BattlefieldLogic {
         int curOwner = creatures.get(battleField.currentUnit).owner;
         battleField.currentUnitChanged();
         messageSender.listenEvent(0, "B");
-        if (creatures.get(battleField.currentUnit).owner == curOwner) {
+        int newOwner = creatures.get(battleField.currentUnit).owner;
+        if (newOwner == curOwner) {
             getTurn();
             Gdx.app.log("Info", "getTurn in passTurn");
         }
         else {
-            messageSender.listenEvent(0, "A");
+            messageSender.listenEvent(0, "A " + newOwner);
         }
     }
 
@@ -68,10 +69,12 @@ public final class BattlefieldLogic {
     public void push(int tp, Creature a) {
         if (!hasTurn)
             return;
-        if (tp == 0) // death
+        if (tp == 0) {// death
             removeFromDatabase(a);
-        else // birth or change
+        }
+        else {// birth or change
             pushToDatabase(a);
+        }
         String ans = Integer.toString(tp) + ";" + a.toString();
         messageSender.listenEvent(0, ans);
     }
@@ -86,10 +89,9 @@ public final class BattlefieldLogic {
             //remove sprite
         }
         else if (tp == 1){ //birth
-            creature.unit = new Unit(creature, true);
+            creature.unit = new Unit(creature, false);
             creatures.put(creature.iD, creature);
             pushToDatabase(creature);
-            creature.unit.teleportTo(creature.pos);
         }
         else {
             Creature creature1 = creatures.get(creature.iD);
@@ -104,7 +106,7 @@ public final class BattlefieldLogic {
     }
 
     public void kill(Creature killed) {
-        creatures.remove(killed.pos);
+        creatures.remove(killed.iD);
         push(0, killed);
     }
 }

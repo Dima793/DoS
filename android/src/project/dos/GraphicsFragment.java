@@ -27,17 +27,35 @@ public class GraphicsFragment extends AndroidFragmentApplication {
 		//        () -> dataBaseController.removeCreature(battlefieldLogic.creatureToSetOrRemove));
 		battlefieldLogic.creatures = new HashMap<Integer, Creature>();
 		battlefieldLogic.freeID = 0;
-		Creature starter1 = new Creature(0, new HexCoord(-10, 1), battlefieldLogic.freeID++, true);
-		Creature starter2 = new Creature(1, new HexCoord(10, -1), battlefieldLogic.freeID++, true);
-		battlefieldLogic.creatures.put(starter1.iD, starter1);
-		battlefieldLogic.creatures.put(starter2.iD, starter2);
-		battlefieldLogic.pushToDatabase(starter1);
-		battlefieldLogic.pushToDatabase(starter2);
-		if (activity.networkController.isHost) {
+		if (battlefieldLogic.owner == 0) {
 			battlefieldLogic.getTurn();
-		}
-		else {
-			battleField.currentUnitChanged();
+			for (int i = 0; i < ((GameActivity) getActivity()).networkController.getNumberOfPlayers(); i++) {
+				HexCoord startPos = new HexCoord(0, 0);
+				switch (i) {
+					case 0:
+						startPos = new HexCoord(10, -5);
+						break;
+					case 1:
+						startPos = new HexCoord(-10, 5);
+						break;
+					case 2:
+						startPos = new HexCoord(5, 5);
+						break;
+					case 3:
+						startPos = new HexCoord(-5, -5);
+						break;
+					case 4:
+						startPos = new HexCoord(-5, 10);
+						break;
+					case 5:
+						startPos = new HexCoord(5, -10);
+						break;
+					}
+				Creature starter = new Creature(i, startPos, battlefieldLogic.freeID++, true);
+				battlefieldLogic.creatures.put(starter.iD, starter);
+				battlefieldLogic.pushToDatabase(starter);
+				battlefieldLogic.push(1, starter);
+			}
 		}
 		return initializeForView(battleField);
 	}
