@@ -28,7 +28,6 @@ public class Unit {
     private State state;
     private Orientation orientation;
     private float animationTime;
-    public boolean hasNoSprites;
 
 
     Unit(Creature creature, boolean drawNow) {
@@ -44,7 +43,6 @@ public class Unit {
             orientation = Orientation.RIGHT;
         }
         textureFolder = "creatures/" + type + creature.getOwner() + "/";
-        hasNoSprites = true;
         if (drawNow) {
             updateSprite(creature.pos);
         }
@@ -77,13 +75,10 @@ public class Unit {
         }
         moveRight = new Animation(0.05f, walkFrames);
         updateSprite(coord);
-        hasNoSprites = false;
     }
 
+
     public void draw(SpriteBatch spriteBatch, float time) {
-        if (hasNoSprites) {
-            makeSprites(HexCoord.pointToHex((int) position.x, (int) position.y));
-        }
         if (state == State.STAND) {
             getSprite().draw(spriteBatch);
             return;
@@ -113,7 +108,8 @@ public class Unit {
 
     public void updateSprite(HexCoord newCoord) {
         position = getHexCorner(HexCoord.hexToPoint(newCoord));
-        getSprite().setPosition(position.x, position.y);
+        spriteLeft.setPosition(position.x, position.y);
+        spriteRight.setPosition(position.x, position.y);
     }
 
     private void setAnimationPosition(float delta) {
@@ -127,8 +123,8 @@ public class Unit {
         position.x = initialPosition.x + (int) (delta * deltaPosition.x);
         position.y = initialPosition.y + (int) (delta * deltaPosition.y);
     }
-
-    private Animation getAnimation() {
+	
+	private Animation getAnimation() {
         if (orientation == Orientation.LEFT) {
             return moveLeft;
         }
