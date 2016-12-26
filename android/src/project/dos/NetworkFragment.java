@@ -23,6 +23,7 @@ public class NetworkFragment extends Fragment {
         Button clientButton = (Button) v.findViewById(R.id.clientButton);
         Button hostButton= (Button) v.findViewById(R.id.hostButton);
         Button startButton = (Button) v.findViewById(R.id.startButton);
+        Button stopButton = (Button) v.findViewById(R.id.stopButton);
 
         clientButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -39,6 +40,12 @@ public class NetworkFragment extends Fragment {
                 ((GameActivity) getActivity()).networkController.stopDiscovery();
                 ((GameActivity) getActivity()).networkController.stopAdvertising();
                 fragmentChanger.listenEvent(0, 1);
+            }
+        });
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                ((GameActivity) getActivity()).networkController.stopDiscovery();
+                ((GameActivity) getActivity()).networkController.stopAdvertising();
             }
         });
 

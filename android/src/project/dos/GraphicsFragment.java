@@ -27,9 +27,7 @@ public class GraphicsFragment extends AndroidFragmentApplication {
 		//        () -> dataBaseController.removeCreature(battlefieldLogic.creatureToSetOrRemove));
 		battlefieldLogic.creatures = new HashMap<Integer, Creature>();
 		battlefieldLogic.freeID = 0;
-		if (battlefieldLogic.owner == 0) {
-			battlefieldLogic.getTurn();
-			for (int i = 0; i < ((GameActivity) getActivity()).networkController.getNumberOfPlayers(); i++) {
+			for (int i = 0; i < ((GameActivity) getActivity()).networkController.numberOfPlayers; i++) {
 				HexCoord startPos = new HexCoord(0, 0);
 				switch (i) {
 					case 0:
@@ -54,8 +52,9 @@ public class GraphicsFragment extends AndroidFragmentApplication {
 				Creature starter = new Creature(i, startPos, battlefieldLogic.freeID++, true);
 				battlefieldLogic.creatures.put(starter.iD, starter);
 				battlefieldLogic.pushToDatabase(starter);
-				battlefieldLogic.push(1, starter);
 			}
+		if (battlefieldLogic.owner == 0) {
+			battlefieldLogic.getTurn();
 		}
 		return initializeForView(battleField);
 	}

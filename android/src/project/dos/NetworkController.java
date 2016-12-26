@@ -39,6 +39,7 @@ public final class NetworkController implements
     private String serviceId;
     public boolean isHost;
     public boolean isDiscovering;
+    public int numberOfPlayers;
     public boolean isAdvertising;
     private ArrayList<String> otherEndpointsIds = new ArrayList<String>();
     private HashMap<String, String> otherEndpointsNames = new HashMap<String, String>();//usernames
@@ -162,6 +163,9 @@ public final class NetworkController implements
             case 'B':
                 battleField.currentUnitChanged();
                 break;
+            case 'C':
+                numberOfPlayers = Integer.parseInt(s.split(" ")[1]);
+                break;
             default:
                 battlefieldLogic.accept(s);
                 break;
@@ -194,7 +198,7 @@ public final class NetworkController implements
     }
 
     public void onStart() {
-        //remindAboutNetworkConnection();
+        remindAboutNetworkConnection();
         googleApiClient.connect();
     }
 
@@ -294,6 +298,12 @@ public final class NetworkController implements
                 isHost = false;
             }
         }
+        if (isHost) {
+            numberOfPlayers = getNumberOfPlayers();
+            sendMessageToAll("C " + numberOfPlayers);
+        }
+
+
     }
 
     public void stopDiscovery() {
