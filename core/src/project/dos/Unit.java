@@ -4,52 +4,106 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.g2d.Animation;
 
 import static project.dos.BattleField.battleField;
 
 public class Unit {
-    Integer id;
-    String type;
-    Vector2 point;
-    //int number;
-    String textureFolder;
-    Sprite sprite;
+    enum State {STAND, MOVE}
+
+    private Integer id;
+    //private int number;
+    private String type;
+    private Vector2 position;
+    Vector2 initialPosition;
+    Vector2 deltaPosition;
+    private String textureFolder;
+    private Sprite sprite;
+    private Animation moveAnimation;
+    private State state;
+    private float animationTime;
+
 
     Unit(Creature creature, boolean drawNow) {
         id = creature.iD;
-        type = creature.name;
-        point = HexCoord.hexToPoint(creature.pos);
         //number = creature.number;
+        type = creature.name;
+        position = getHexCorner(HexCoord.hexToPoint(creature.pos));
+        state = State.STAND;
         textureFolder = "creatures/" + type;
-        if (drawNow) {
-            makeSprite(creature);
-        }
-    }
-
-    public void makeSprite(Creature creature) {
-        String filePath = textureFolder;
         if (creature.getOwner() == 0) {
-            filePath += "/Right.png";
+            textureFolder += "/Right/";
         }
         else {
-            filePath += "/Left.png";
+            textureFolder += "/Left/";
         }
-        sprite = new Sprite(new Texture(Gdx.files.internal(filePath)));
-        updateSprite(creature.pos);
+        if (drawNow) {
+            updateSprite(creature.pos);
+        }
     }
 
-    public void draw(SpriteBatch spriteBatch) {
-        sprite.draw(spriteBatch);
+    public void makeSprite(HexCoord coord) {
+        sprite = new Sprite(new Texture(Gdx.files.internal(textureFolder + "0.png")));
+        TextureRegion[][] tmp = TextureRegion.split(
+                new Texture(Gdx.files.internal(textureFolder + "move.png")), 96, 64);
+        TextureRegion[] walkFrames = new TextureRegion[8];
+        int index = 0;
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 4; j++) {
+                walkFrames[index++] = tmp[i][j];
+            }
+        }
+        moveAnimation = new Animation(0.05f, walkFrames);
+        updateSprite(coord);
+    }
+
+    public void draw(SpriteBatch spriteBatch, float time) {
+        switch (state) {
+            case STAND:
+                sprite.draw(spriteBatch);
+                break;
+            case MOVE:
+                setAnimationPosition(time - animationTime);
+                spriteBatch.draw(moveAnimation.getKeyFrame(time, true), position.x, position.y);
+                break;
+        }
+
     }
 
     public void teleportTo(HexCoord hexCoord) {
         updateSprite(hexCoord);
     }
 
-    void updateSprite(HexCoord newCoord) {
-        point = HexCoord.hexToPoint(newCoord);
-        sprite.setPosition(point.x - 45, point.y - 14);
+    public void moveTo(HexCoord hexCoord) {
+        initialPosition = new Vector2(position);
+        deltaPosition = getHexCorner(HexCoord.hexToPoint(hexCoord));
+        deltaPosition.x -= position.x;
+        deltaPosition.y -= position.y;
+        animationTime = battleField.stateTime;
+        state = State.MOVE;
+    }
+
+    public void updateSprite(HexCoord newCoord) {
+        position = getHexCorner(HexCoord.hexToPoint(newCoord));
+        sprite.setPosition(position.x, position.y);
+    }
+
+    private void setAnimationPosition(float delta) {
+        if (delta > 1f) {
+            position = new Vector2(
+                    initialPosition.x + deltaPosition.x, initialPosition.y + deltaPosition.y);
+            state = State.STAND;
+            sprite.setPosition(position.x, position.y);
+            return;
+        }
+        position.x = initialPosition.x + (int) (delta * deltaPosition.x);
+        position.y = initialPosition.y + (int) (delta * deltaPosition.y);
+    }
+
+    private Vector2 getHexCorner(Vector2 point) {
+        return new Vector2(point.x - 45, point.y - 14);
     }
     /*
     void move(int[] path) {

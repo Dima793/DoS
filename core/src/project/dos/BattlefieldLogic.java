@@ -98,7 +98,7 @@ public final class BattlefieldLogic {
             creature1.hp = creature.hp;
             creature1.ap = creature.ap;
             creature1.name = creature.name;
-            creature1.unit.teleportTo(creature1.pos);
+            creature1.unit.moveTo(creature1.pos);
             pushToDatabase(creature1);
         }
     }

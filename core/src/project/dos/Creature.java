@@ -87,7 +87,8 @@ public class Creature {
         }
         pos = targetPos;
         ap -= pointsSpent;
-        unit.updateSprite(targetPos);
+        //unit.teleportTo(targetPos);
+        unit.moveTo(targetPos);
         battlefieldLogic.push(2, this);
         return true;
     }

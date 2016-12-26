@@ -40,6 +40,7 @@ public final class BattleField extends ApplicationAdapter implements
 	public int scrWidth;
 	public int zeroX = 1015;
 	public int zeroY = 547;
+	public float stateTime = 0f;
 
 	//public static Sprite sprite;
 
@@ -64,7 +65,7 @@ public final class BattleField extends ApplicationAdapter implements
 
 		spriteBatch = new SpriteBatch();
 		for (Creature creature : battlefieldLogic.creatures.values()) {
-			creature.unit.makeSprite(creature);
+			creature.unit.makeSprite(creature.pos);
 			if (creature.owner == battlefieldLogic.owner) {
 				moveCameraToHex(creature.pos);
 			}
@@ -95,8 +96,9 @@ public final class BattleField extends ApplicationAdapter implements
 		spriteBatch.setProjectionMatrix(camera.combined);
 
 		spriteBatch.begin();
+		stateTime += Gdx.graphics.getDeltaTime();
 		for (Creature creature : battlefieldLogic.creatures.values()) {
-			creature.unit.draw(spriteBatch);
+			creature.unit.draw(spriteBatch, stateTime);
 		}
 
 		hexStage.act();
